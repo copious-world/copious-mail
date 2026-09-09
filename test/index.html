@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="author" content="Richard Leddy" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+<meta id="theme-color" name="theme-color" content="#452770">
+
+<link rel="canonical" href="http://www.copious.world">
+
+<title>Copious World</title>
+<meta name="description" content="An entry point into the our world of AI, IoT, and Communities built around songs, etc.">
+<link rel="icon" type="image/svg+xml" href="/copiousLogo.svg" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700" />
+
+<!-- <link rel="stylesheet" href="node_modules/@xterm/xterm/css/xterm.css" />
+<script src="node_modules/@xterm/xterm/lib/xterm.js"></script> -->
+
+<script type="module">
+
+    import Mikado from "./mikado.bundle.module.min.js";
+
+    //
+    // import tweet_template from "./tpl/partial/user.js";
+    // const tweet_view = new Mikado(tweet_template, {/* options */});
+    // window._x_share_tweet_view = tweet_view
+
+    //
+    import inbox_template from "./tpl/partial/inbox_list.js";
+    import sent_template from "./tpl/partial/sent_list.js";
+    import draft_template from "./tpl/partial/draft_list.js";
+    import spam_template from "./tpl/partial/spam_list.js";
+    import notify_template from "./tpl/partial/notify_list.js";
+    import trash_template from "./tpl/partial/trash_list.js";
+
+    let mail_imports = {
+        "inbox" : inbox_template,
+        'sent' : sent_template,
+        'drafts' : draft_template,
+        'spam' : spam_template,
+        'notify' : notify_template,
+        'trash' : trash_template
+    }
+    //
+    let mail_classes = ['inbox','sent','drafts','spam','notify','trash']
+    let mail_management = {}
+
+    for ( let mtype of mail_classes ) {
+        let store = new Mikado.Array();
+        let mail_template = mail_imports[mtype]
+        let view = new Mikado(mail_template, { observe: store });
+        mail_management[mtype] = {
+            "view" : view,
+            "store" : store,
+            "root" : null,
+            "container_el" : null
+        }
+    }
+
+    window._x_share_mail_managers = mail_management
+
+</script>
+</head>
+<body>
+    <!-- MAIL DISPLAY -->
+    <div>
+    <button onclick="mail_switch_to('inbox')" >inbox</button>
+    <button onclick="mail_switch_to('sent')" >sent</button>
+    <button onclick="mail_switch_to('drafts')" >drafts</button>
+    <!-- AND also -->
+    <button onclick="mail_switch_to('spam')" >spam</button>
+    <button onclick="mail_switch_to('notify')" >notfication</button>
+    <button onclick="mail_switch_to('trash')" >trash</button>
+    </div>
+    <main id="mail-main" >
+        <div id="inbox-mail" style="display:block" >
+            <div>
+                <button onclick="add_mails('inbox')">add mails</button>
+                <button onclick="swap_two('inbox')">swap two mails</button>
+                <button onclick="delete_two('inbox')">delete two mails</button>
+                <button onclick="sort_mail('inbox')")">sort mails</button>
+                <button onclick="reverse_mail('inbox')")">reverse mails</button>
+            </div>
+            <div id="list-mail-inbox" >
+
+            </div>
+        </div>
+        <div id="sent-mail" style="display:none" >
+            <div>
+                <button onclick="add_mails('sent')">add mails</button>
+                <button onclick="swap_two('sent')">swap two mails</button>
+                <button onclick="delete_two('sent')">delete two mails</button>
+                <button onclick="sort_mail('sent')")">sort mails</button>
+                <button onclick="reverse_mail('sent')")">reverse mails</button>
+            </div>
+            <div id="list-mail-sent" >
+
+            </div>
+        </div>
+        <div id="drafts-mail" style="display:none" >
+            <div>
+                <button onclick="add_mails('drafts')">add mails</button>
+                <button onclick="swap_two('drafts')">swap two mails</button>
+                <button onclick="delete_two('drafts')">delete two mails</button>
+                <button onclick="sort_mail('drafts')")">sort mails</button>
+                <button onclick="reverse_mail('drafts')")">reverse mails</button>
+            </div>
+            <div id="list-mail-drafts" >
+
+            </div>
+        </div>
+        <div id="spam-mail" style="display:none" >
+            <div>
+                <button onclick="add_mails('spam')">add mails</button>
+                <button onclick="swap_two('spam')">swap two mails</button>
+                <button onclick="delete_two('spam')">delete two mails</button>
+                <button onclick="sort_mail('spam')")">sort mails</button>
+                <button onclick="reverse_mail('spam')")">reverse mails</button>
+            </div>
+            <div id="list-mail-spam" >
+
+            </div>
+        </div>
+        <div id="notify-mail" style="display:none" >
+            <div>
+                <button onclick="add_mails('notify')">add mails</button>
+                <button onclick="swap_two('notify')">swap two mails</button>
+                <button onclick="delete_two('notify')">delete two mails</button>
+                <button onclick="sort_mail('notify')")">sort mails</button>
+                <button onclick="reverse_mail('notify')")">reverse mails</button>
+            </div>
+            <div id="list-mail-notify" >
+
+            </div>
+        </div>
+        <div id="trash-mail" style="display:none" >
+            <div>
+                <button onclick="add_mails('trash')">add mails</button>
+                <button onclick="swap_two('trash')">swap two mails</button>
+                <button onclick="delete_two('trash')">delete two mails</button>
+                <button onclick="sort_mail('trash')")">sort mails</button>
+                <button onclick="reverse_mail('trash')")">reverse mails</button>
+            </div>
+            <div id="list-mail-trash" >
+
+            </div>
+        </div>
+<!--
+        <div>
+            <button onclick="update_some_tweet()">change data</button>
+            <button onclick="replace_tweets()">replace data</button>
+            <button onclick="change_tweets()">change_tweets</button>
+        </div>
+        <div id="tweets" >
+
+        </div>
+-->
+    </main>
+
+</body>
+</html>
+<script type="module">
+
+    const mail_managers = window._x_share_mail_managers
+    
+    
+    // let data = [{
+    //         username: "User A",
+    //         last_tweet: "foo",
+    //         tweets: ["foo", "bar", "foobar"]
+    //     },{
+    //         username: "User B",
+    //         last_tweet: "who",
+    //         tweets: ["foo", "bar", "foobar"]
+    //     },{
+    //         username: "User C",
+    //         last_tweet: "grew",
+    //         tweets: ["foo", "bar", "foobar"]
+    //     }];
+    //
+    let mail_main = document.getElementById("mail-main")
+    // let tweets = document.getElementById("tweets")
+
+
+    for ( let mtype in mail_managers ) {
+        let a_manager = mail_managers[mtype]
+        a_manager.root = document.getElementById(`list-mail-${mtype}`)
+        a_manager.container_el = document.getElementById(`${mtype}-mail`)
+        if ( a_manager.root ) {
+            a_manager?.view?.mount(a_manager.root)
+        }
+    }
+
+
+    let date = new Date()
+    let one_mail =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    mail_managers['inbox'].store.push(one_mail)
+
+    let one_sent =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    mail_managers['sent'].store.push(one_sent)
+
+
+    let one_drafts =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    mail_managers['drafts'].store.push(one_drafts)
+
+
+    // function update_some_tweet() {
+    //     let b = Math.floor(Math.random()*3)
+    //     b = Math.min(b,(data.length-1))
+    //     let tweet = data[b]
+    //     let n = tweet.tweets.length
+    //     let t  = Math.floor(Math.random()*n)
+    //     t = Math.min(t,(n-1))
+    //     let last_t = tweet.tweets[t]
+    //     data[b].last_tweet = last_t
+    // }
+
+    // function change_tweets() {
+
+    //     let b = Math.floor(Math.random()*3)
+    //     b = Math.min(b,(data.length-1))
+
+    //     let tweet = data[b]
+    //     let n = tweet.tweets.length
+    //     let t  = Math.floor(Math.random()*n)
+    //     t = Math.min(t,(n-1))
+
+    //     tweet.tweets[t] = "up" + Date.now()
+    //     //
+    //     a_view.render(data)
+    // }
+
+    // function replace_tweets() {
+    //     const updata = [{
+    //             username: "User Q",
+    //             last_tweet: "foo",
+    //             tweets: ["who", "knew", "you"]
+    //         },{
+    //             username: "User R",
+    //             last_tweet: "who",
+    //             tweets: ["he", "told", "them"]
+    //         },{
+    //             username: "User S",
+    //             last_tweet: "grew",
+    //             tweets: ["have", "a", "nice", "day"]
+    //         }];
+
+    //     data = updata
+    //     a_view.render(data)
+    // }
+
+    // window.update_some_tweet = update_some_tweet
+
+    // window.replace_tweets = replace_tweets
+
+    // window.change_tweets = change_tweets
+
+    function store_of_mail_manager(mtype) {
+        let mobj = mail_managers[mtype]
+        if ( mobj ) {
+            if ( mobj.store ){
+                return mobj.store
+            }            
+        }
+        return false
+    }
+
+    
+
+    let bunch_of_mails = [
+        { "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString() },
+        { "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString() },
+        { "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString() },
+        { "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString() },
+        { "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString() },
+    ]
+    window.add_mails = (mtype) => {
+        let mail_store = store_of_mail_manager(mtype)
+        let new_mail_bunch = structuredClone(bunch_of_mails)
+        if ( mail_store ) {
+            if ( mail_store.length ) {
+                mail_store.concat(new_mail_bunch)
+            } else {
+                mail_store.set(new_mail_bunch)
+            }
+        }
+    }
+
+    window.swap_two = (mtype) => {
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) mail_store.swap(2,5)
+    }
+
+    window.delete_two = (mtype) => {
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) mail_store.splice(3,2)
+    }
+
+    window.sort_mail = (mtype) => {
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) mail_store.sort((a,b) => {
+            if ( a.sender > b.sender ) return 1
+            if ( a.sender < b.sender ) return -1
+            return 0
+        })
+    }
+
+    window.reverse_mail = (mtype) => {
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) mail_store.reverse()
+    }
+
+
+    window.mail_switch_to  = (mtype) => {
+        for ( let one_mtype in mail_managers ) {
+            let mobj = mail_managers[one_mtype]
+            if ( mobj.container_el ) {
+                mobj.container_el.style.display = "none"
+            }
+        }
+        let mobj = mail_managers[mtype]
+        if ( mobj ) {
+            if ( mobj.container_el ) {
+                mobj.container_el.style.display = "block"
+            }            
+        }
+    }
+
+</script>
