@@ -25,6 +25,7 @@
     "main": "index.js",
     "scripts": {
         "test": "node test/index.js",
+        "web" : "http-server test/",
         "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
     },
     "dependencies": {

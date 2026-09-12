@@ -37,7 +37,6 @@
     details::details-content {
         width: 0;
         overflow: hidden;
-        transition: width 0.3s ease-out, content-visibility 0.3s allow-discrete;
     }
 
     /* 2. Target the content when the parent <details> is open */
@@ -45,22 +44,71 @@
         width: auto;
     }
 
+
     .mail-go-container {
-        border: solid 1px rgb(8, 22, 8);
-        box-shadow: 3px 3px rgba(128, 128, 128, 0.377);
-        width: fit-content;
         padding: 6px;
         padding-right: 16px;
+        /*  -- */
     }
 
-    .mail-go-container > ul {
+    .mail-go-container > blockquote {
+        border: solid 1px rgb(8, 22, 8);
+        background-color: white;
+        box-shadow: 3px 3px rgba(128, 128, 128, 0.377);
+        margin: 0;             /* Prevents default browser spacing */
+        position: absolute;
+        top: 0;
+        left:0;
+        height: calc(100vh - 40px);
+        overflow-y: auto;
+        transition: width 0.3s ease-out, content-visibility 0.3s allow-discrete;
+        display: none;
+    }
+
+    details[open]  .mail-go-container > blockquote {
+        display: block;
+        width: 200px;
+        @starting-style { width: 0; }
+    }
+
+
+    .mail-go-container ul {
+        width: calc(100% - 24px);
         list-style-type: none; /* Removes the dots */
-        padding-left: 0;       /* Removes left indentation */
+        padding-left: 10px;
+        padding-right: 10px;
         margin: 0;             /* Prevents default browser spacing */
     }
 
+    .mail-go-container ul > li {
+        border-bottom: 1px solid rgb(5, 36, 5);
+    }
+
+    .mail-go-container ul > li > button {
+        width: 100%;
+        background-color: white;
+        border:none;
+        margin-bottom: 2%;
+        font-weight: bold;
+        font-size: 105%;
+    }
+
+    .mail-go-container ul > li > button:hover {
+        background-color: rgba(221, 255, 177, 0.57);
+        color: rgba(255, 123, 0, 0.86)
+    }
+
+
     .follow-menu {
         float: inline-end;
+    }
+
+    h4 {
+        padding-left: 8%;
+        font-style: italic;
+        color: rgb(50, 88, 40);
+        width: calc(100% - 20px);
+        background-color: rgba(250, 250, 179, 0.84);
     }
 
 </style>
@@ -125,15 +173,34 @@
     </summary>
     <!-- MAIL MENU CONTROL -->
     <div class="mail-go-container" >
-        <ul>
-            <li><button onclick="mail_switch_to('inbox')" >inbox</button></li>
-            <li><button onclick="mail_switch_to('sent')" >sent</button></li>
-            <li><button onclick="mail_switch_to('drafts')" >drafts</button></li>
-            <!-- AND also -->
-            <li><button onclick="mail_switch_to('spam')" >spam</button></li>
-            <li><button onclick="mail_switch_to('notify')" >notfication</button></li>
-            <li><button onclick="mail_switch_to('trash')" >trash</button></li>
-        </ul>
+        <blockquote onclick="close_if_open()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
+                <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+            </svg>
+            <h4>messages</h4>
+            <ul>
+                <li><button onclick="mail_create()" >write new</button></li>
+                <li><button onclick="mail_switch_to('drafts')" >drafts</button></li>
+                <li><button onclick="mail_switch_to('sent')" >sent</button></li>
+            </ul>
+            <h4>received</h4>
+            <ul>
+                <li><button onclick="mail_switch_to('inbox')" >inbox</button></li>
+                <li><button onclick="mail_switch_to('notify')" >notfication</button></li>
+             </ul>
+            <h4>filtered</h4>
+            <ul>
+                <li><button onclick="mail_switch_to('spam')" >spam</button></li>
+                <li><button onclick="mail_switch_to('trash')" >trash</button></li>
+            </ul>
+            <h4>manage</h4>
+            <ul>
+                <li><button onclick="contacts_ui()" >contacts</button></li>
+                <li><button onclick="search_ui()" >search contact</button></li>
+                <li><button onclick="search_ui()" >search messages</button></li>
+                <li><button onclick="manage_prefs()" >preferences</button></li>
+            </ul>
+        </blockquote>
     </div>
 </details>
 <!-- 
@@ -416,4 +483,20 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             squash_container.removeAttribute("open")
         }
     }
+
+    // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+    // open windows
+    function mail_create() {
+
+    }
+
+    function contacts_ui() {
+
+    }
+
+    function manage_prefs() {
+
+    }
+
+
 </script>
