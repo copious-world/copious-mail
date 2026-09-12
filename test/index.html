@@ -15,8 +15,55 @@
 <link rel="icon" type="image/svg+xml" href="/copiousLogo.svg" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700" />
 
-<!-- <link rel="stylesheet" href="node_modules/@xterm/xterm/css/xterm.css" />
-<script src="node_modules/@xterm/xterm/lib/xterm.js"></script> -->
+<link rel="stylesheet" href="./mail_styles.css" />
+<style>
+    summary {
+        list-style: none; /* Modern standard way */
+    }
+    summary::-webkit-details-marker {
+        display: none; /* Safari and older Chrome support */
+    }
+
+    /* 
+    details[open] summary::after {
+        background-color: rgba(235, 235, 187, 1);
+    } */
+
+    html {
+        interpolate-size: allow-keywords;
+    }
+
+    /* 1. Target the wrapper element containing the content inside <details> */
+    details::details-content {
+        width: 0;
+        overflow: hidden;
+        transition: width 0.3s ease-out, content-visibility 0.3s allow-discrete;
+    }
+
+    /* 2. Target the content when the parent <details> is open */
+    details[open]::details-content {
+        width: auto;
+    }
+
+    .mail-go-container {
+        border: solid 1px rgb(8, 22, 8);
+        box-shadow: 3px 3px rgba(128, 128, 128, 0.377);
+        width: fit-content;
+        padding: 6px;
+        padding-right: 16px;
+    }
+
+    .mail-go-container > ul {
+        list-style-type: none; /* Removes the dots */
+        padding-left: 0;       /* Removes left indentation */
+        margin: 0;             /* Prevents default browser spacing */
+    }
+
+    .follow-menu {
+        float: inline-end;
+    }
+
+</style>
 
 <script type="module">
 
@@ -64,16 +111,41 @@
 </script>
 </head>
 <body>
-    <!-- MAIL DISPLAY -->
-    <div>
-    <button onclick="mail_switch_to('inbox')" >inbox</button>
-    <button onclick="mail_switch_to('sent')" >sent</button>
-    <button onclick="mail_switch_to('drafts')" >drafts</button>
-    <!-- AND also -->
-    <button onclick="mail_switch_to('spam')" >spam</button>
-    <button onclick="mail_switch_to('notify')" >notfication</button>
-    <button onclick="mail_switch_to('trash')" >trash</button>
+<nav id="mainNav" >
+
+<div class="follow-menu">
+<span id="mail-type-title">inbox</span>
+</div>
+
+<details id="squash_container" class="squash_m" >
+    <summary>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
+        <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+    </svg>
+    </summary>
+    <!-- MAIL MENU CONTROL -->
+    <div class="mail-go-container" >
+        <ul>
+            <li><button onclick="mail_switch_to('inbox')" >inbox</button></li>
+            <li><button onclick="mail_switch_to('sent')" >sent</button></li>
+            <li><button onclick="mail_switch_to('drafts')" >drafts</button></li>
+            <!-- AND also -->
+            <li><button onclick="mail_switch_to('spam')" >spam</button></li>
+            <li><button onclick="mail_switch_to('notify')" >notfication</button></li>
+            <li><button onclick="mail_switch_to('trash')" >trash</button></li>
+        </ul>
     </div>
+</details>
+<!-- 
+/*
+Source - https://stackoverflow.com/a/71646714
+Posted by TrojanName
+Retrieved 2026-09-09, License - CC BY-SA 4.0
+*/ -->
+
+</nav>
+
+    <!-- MAIL DISPLAY -->
     <main id="mail-main" >
         <div id="inbox-mail" style="display:block" >
             <div>
@@ -313,6 +385,8 @@
     }
 
 
+    let mtype_title = document.getElementById("mail-type-title")
+
     window.mail_switch_to  = (mtype) => {
         for ( let one_mtype in mail_managers ) {
             let mobj = mail_managers[one_mtype]
@@ -324,8 +398,22 @@
         if ( mobj ) {
             if ( mobj.container_el ) {
                 mobj.container_el.style.display = "block"
+                //
+                mtype_title.innerText = mtype
             }            
         }
     }
 
+</script>
+<script>
+    let squash_container = document.getElementById("squash_container")
+    window.addEventListener("click",(event) => {
+        close_if_open()
+    })
+
+    function close_if_open() {
+        if ( squash_container.hasAttribute("open" ) ) {
+            squash_container.removeAttribute("open")
+        }
+    }
 </script>
