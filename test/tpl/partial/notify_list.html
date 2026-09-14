@@ -1,8 +1,8 @@
-<table style="width:100%">
+
   <tr>
-    <td>OP:</td>
-    <td>{{ data.sender }}</td>
-    <td>{{ data.subject }}</td>
-    <td>{{ data.date }}</td>
+    <td class="notify-checkbox-cell"><input type="checkbox" name="notify_check_select"/></td>
+    <td class="notify-recipient-cell" onclick="view_from_notify({{data.id}})">{{ data.sender }}</td>
+    <td class="notify-subject-cell" onclick="view_from_notify({{data.id}})">{{ data.subject }}</td>
+    <td class="notify-date-cell" onclick="view_from_notify({{data.id}})">{{ data.date }}</td>
   </tr>
 </table>

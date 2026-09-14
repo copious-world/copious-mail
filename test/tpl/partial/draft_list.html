@@ -1,8 +1,8 @@
-<table style="width:100%">
+
   <tr>
-    <td>OP:</td>
-    <td>{{ data.sender }}</td>
-    <td>{{ data.subject }}</td>
-    <td>{{ data.date }}</td>
+    <td class="ed-checkbox-cell"><input type="checkbox" name="draft_check_select"/></td>
+    <td class="ed-recipient-cell" onclick="edit_from_draft({{data.id}})">{{ data.recipient }}</td>
+    <td class="ed-subject-cell" onclick="edit_from_draft({{data.id}})">{{ data.subject }}</td>
+    <td class="ed-date-cell" onclick="edit_from_draft({{data.id}})">{{ data.date }}</td>
   </tr>
-</table>
+  

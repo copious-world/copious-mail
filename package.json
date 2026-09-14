@@ -26,6 +26,8 @@
     "scripts": {
         "test": "node test/index.js",
         "web" : "http-server test/",
+        "compile" : "npx mikado-compile ./tpl/",
+        "compile-test" : "npx mikado-compile ./test/tpl/",
         "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
     },
     "dependencies": {

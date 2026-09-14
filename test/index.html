@@ -16,7 +16,206 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700" />
 
 <link rel="stylesheet" href="./mail_styles.css" />
+
 <style>
+
+.fade_able {
+	position:absolute;
+	visibility:hidden;
+	top : 10px; left : 10px;
+	height:80%;
+	width: 40%;
+	z-index:101;
+	border: rgba(252, 190, 190, 0.4) 2px solid;
+	background-color: white;
+	overflow:hidden;
+    box-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);
+}
+
+@media screen and (max-width: 1100px) {
+    .right_fade_able {
+        position:absolute;
+        visibility:hidden;
+        top : 10px; left : 10px;
+        height:80%;
+        width: 90%;
+        z-index:101;
+        border: rgba(252, 190, 190, 0.4) 2px solid;
+        background-color: white;
+        overflow:hidden;
+        box-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);
+    }
+}
+@media screen and (min-width: 1100px) {
+    .right_fade_able {
+        position:absolute;
+        visibility:hidden;
+        top : 10px; left : 460px;
+        height:80%;
+        width: 60%;
+        z-index:101;
+        border: rgba(252, 190, 190, 0.4) 2px solid;
+        background-color: white;
+        overflow:hidden;
+        box-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);
+    }
+}
+
+
+.fadeable-wide {
+	width: 60%;
+}
+
+@media screen and (max-width: 1040px) {
+	.fade_able {
+		width: 60%;
+	}
+    .fadeable-wide {
+	    width: 60%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+	.fade_able {
+		width: 90%;
+	}
+    .fadeable-wide {
+	    width: 90%;
+    }
+}
+
+
+.fade_able_content {
+	height:100%;
+	width: 100%;
+	overflow:auto;
+    cursor: pointer;
+}
+
+
+
+.togglebar {
+	height: fit-content;
+	visibility:inherit;
+	background-color: navy;
+	text-align:right;
+    cursor: move;
+}
+
+.togglebar:hover { 
+	background-color: darkgreen;
+}
+
+
+.togglebar-sect {
+	height:16px;
+	visibility:inherit;
+	background-color: navy;
+	text-align:center;
+    vertical-align:middle;
+    cursor: pointer;
+    font-weight: bold;
+    font-size:200%;
+    color: navy;
+    padding-bottom: 3px;
+    padding-top:0;
+}
+
+.togglebar-sect:hover { 
+	background-color: darkgreen;
+    color: orange;
+}
+
+
+.closer_x {
+	padding-left:2px;
+	padding-right:2px;
+	color:rgb(216, 159, 37);
+	font-weight:bolder;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	border: solid 1px rgb(255, 102, 0);
+	cursor:pointer;
+	height: 24px;
+	min-height: 24px;
+	max-height: 24px;
+    font-weight: bolder;
+	background-color: rgba(92, 92, 117, 0.815);
+}
+
+.closer_x:hover {
+	padding-left:2px;
+	padding-right:2px;
+	color:purple;
+	font-weight:bolder;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	border: solid 1px rgb(44, 129, 44);
+	cursor:pointer;
+	height: inherit;
+    font-weight: bolder;
+	background-color: rgb(248, 245, 219);
+}
+
+
+.sizerbar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1000; /* Adjust as needed to be above other content */
+    height:10px;
+    width: 10px;
+	visibility:inherit;
+	background-color: navy;
+	text-align:center;
+    cursor: nesw-resize;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	border: solid 1px rgb(44, 129, 44);
+	cursor:pointer;
+    font-weight: bolder;
+}
+
+.sizerbar:hover {
+	padding-left:2px;
+	padding-right:2px;
+	color:purple;
+    cursor: nesw-resize;
+	background-color: rgb(248, 245, 219);
+}
+
+.op-button {
+    padding:2px;
+    width:fit-content;
+    font-size: small;
+	border-color: rgb(248, 245, 219);
+}
+
+.flows-bash-cmd {
+    background-color:rgb(255, 255, 234);
+    border:1px solid rgb(51, 25, 51);
+    padding:2px;
+    color:rgb(53, 15, 15);
+    font-weight: 550;
+}
+
+.flows-bash-cmd-the-cmd {
+    color:rgb(9, 39, 9);
+    font-weight: 600;
+}
+
+
+.report-window-styles {
+    border : solid 1px rgb(43, 11, 43);
+    padding : 3px;
+    background-color: rgb(255, 253, 225);
+}
+
+</style>
+
+<style>
+
+    html {
+        interpolate-size: allow-keywords;
+    }
+
     summary {
         list-style: none; /* Modern standard way */
     }
@@ -28,10 +227,6 @@
     details[open] summary::after {
         background-color: rgba(235, 235, 187, 1);
     } */
-
-    html {
-        interpolate-size: allow-keywords;
-    }
 
     /* 1. Target the wrapper element containing the content inside <details> */
     details::details-content {
@@ -91,6 +286,7 @@
         margin-bottom: 2%;
         font-weight: bold;
         font-size: 105%;
+        text-wrap: nowrap;
     }
 
     .mail-go-container ul > li > button:hover {
@@ -101,6 +297,10 @@
 
     .follow-menu {
         float: inline-end;
+        padding-right:20%;
+        font-weight: bold;
+        font-size: 1.15em;
+        width: 50%;
     }
 
     h4 {
@@ -110,6 +310,136 @@
         width: calc(100% - 20px);
         background-color: rgba(250, 250, 179, 0.84);
     }
+
+    h4 > button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font: inherit;
+        text-wrap: nowrap;
+    }
+
+    /** list styling **/
+    /* drafts list */
+    .email-drafts {
+        background-color: white;
+    }
+    .email-drafts tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-drafts > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .drafts-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .drafts-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .drafts-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .drafts-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .ed-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .ed-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .ed-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .ed-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    /* sent list */
+    .email-sent {
+        background-color: white;
+    }
+    .email-sent tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-sent > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .sent-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .sent-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .sent-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .sent-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .sent-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .sent-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .sent-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .sent-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    /* inbox list */
+    .email-inbox { 
+        background-color: white; 
+    }
+    .email-inbox tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-inbox > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .in-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .in-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .in-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .in-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .in-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .in-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .in-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .in-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    /* notify list */
+    .email-notify { 
+        background-color: white; 
+    }
+    .email-notify tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-notify > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .notify-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .notify-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .notify-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .notify-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .notify-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .notify-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .notify-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .notify-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    /* spam list */
+    .email-spam { 
+        background-color: white; 
+    }
+    .email-spam tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-spam > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .spam-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .spam-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .spam-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .spam-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .spam-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .spam-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .spam-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .spam-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    /* trash list */
+    .email-trash { 
+        background-color: white; 
+    }
+    .email-trash tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .email-trash > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .trash-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .trash-recipient-th { background-color: white; cursor: pointer; width: 25%; }
+    .trash-subject-th { background-color: white; cursor: pointer; width: 33%; }
+    .trash-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .trash-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .trash-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .trash-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .trash-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
 
 </style>
 
@@ -162,13 +492,22 @@
 <nav id="mainNav" >
 
 <div class="follow-menu">
-<span id="mail-type-title">inbox</span>
+    <span id="mail-type-title">inbox</span>
+    testing...
+    <button onclick="add_mails()">add mails</button>
+    <button onclick="swap_two()">swap two mails</button>
+    <button onclick="delete_two()">delete two mails</button>
+    <button onclick="sort_mail()">sort mails</button>
+    <button onclick="reverse_mail()">reverse mails</button>
 </div>
 
 <details id="squash_container" class="squash_m" >
     <summary>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
-        <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+        <path class="her
+<!-- 
+/*
+oicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
     </svg>
     </summary>
     <!-- MAIL MENU CONTROL -->
@@ -177,32 +516,33 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
                 <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
             </svg>
-            <h4>messages</h4>
-            <ul>
+            <h4><button onclick="toggle_ul(event,'messages')">messages <span id="ardn-messages" style="display:inline-block">&#x25BC;</span><span id="arrt-messages" style="display:none">&#x25BA;</span></button></h4>
+            <ul id="ul-messages">
                 <li><button onclick="mail_create()" >write new</button></li>
                 <li><button onclick="mail_switch_to('drafts')" >drafts</button></li>
                 <li><button onclick="mail_switch_to('sent')" >sent</button></li>
             </ul>
-            <h4>received</h4>
-            <ul>
+            <h4><button onclick="toggle_ul(event,'received')">received <span id="ardn-received" style="display:inline-block">&#x25BC;</span><span id="arrt-received" style="display:none">&#x25BA;</span></button></h4>
+            <ul id="ul-received">
                 <li><button onclick="mail_switch_to('inbox')" >inbox</button></li>
                 <li><button onclick="mail_switch_to('notify')" >notfication</button></li>
              </ul>
-            <h4>filtered</h4>
-            <ul>
+            <h4><button onclick="toggle_ul(event,'filtered')">filtered <span id="ardn-filtered" style="display:inline-block">&#x25BC;</span><span id="arrt-filtered" style="display:none">&#x25BA;</span></button></h4>
+            <ul id="ul-filtered">
                 <li><button onclick="mail_switch_to('spam')" >spam</button></li>
                 <li><button onclick="mail_switch_to('trash')" >trash</button></li>
             </ul>
-            <h4>manage</h4>
-            <ul>
+            <h4><button onclick="toggle_ul(event,'manage')">manage <span id="ardn-manage" style="display:inline-block">&#x25BC;</span><span id="arrt-manage" style="display:none">&#x25BA;</span></button></h4>
+            <ul id="ul-manage">
                 <li><button onclick="contacts_ui()" >contacts</button></li>
-                <li><button onclick="search_ui()" >search contact</button></li>
-                <li><button onclick="search_ui()" >search messages</button></li>
+                <li><button onclick="search_ui('contacts')" >search contact</button></li>
+                <li><button onclick="search_ui('messages')" >search messages</button></li>
                 <li><button onclick="manage_prefs()" >preferences</button></li>
             </ul>
         </blockquote>
     </div>
 </details>
+
 <!-- 
 /*
 Source - https://stackoverflow.com/a/71646714
@@ -216,87 +556,115 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     <main id="mail-main" >
         <div id="inbox-mail" style="display:block" >
             <div>
-                <button onclick="add_mails('inbox')">add mails</button>
-                <button onclick="swap_two('inbox')">swap two mails</button>
-                <button onclick="delete_two('inbox')">delete two mails</button>
-                <button onclick="sort_mail('inbox')")">sort mails</button>
-                <button onclick="reverse_mail('inbox')")">reverse mails</button>
-            </div>
-            <div id="list-mail-inbox" >
+                <table class="email-inbox" style="width:100%" >
+                    <thead>
+                        <th class="in-checkbox-th">op</th>
+                        <th class="in-recipient-th">sender</th>
+                        <th class="in-subject-th">subject</th>
+                        <th class="in-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-inbox" class="email-inbox" style="width:100%" >
 
-            </div>
-        </div>
-        <div id="sent-mail" style="display:none" >
-            <div>
-                <button onclick="add_mails('sent')">add mails</button>
-                <button onclick="swap_two('sent')">swap two mails</button>
-                <button onclick="delete_two('sent')">delete two mails</button>
-                <button onclick="sort_mail('sent')")">sort mails</button>
-                <button onclick="reverse_mail('sent')")">reverse mails</button>
-            </div>
-            <div id="list-mail-sent" >
-
-            </div>
-        </div>
-        <div id="drafts-mail" style="display:none" >
-            <div>
-                <button onclick="add_mails('drafts')">add mails</button>
-                <button onclick="swap_two('drafts')">swap two mails</button>
-                <button onclick="delete_two('drafts')">delete two mails</button>
-                <button onclick="sort_mail('drafts')")">sort mails</button>
-                <button onclick="reverse_mail('drafts')")">reverse mails</button>
-            </div>
-            <div id="list-mail-drafts" >
-
-            </div>
-        </div>
-        <div id="spam-mail" style="display:none" >
-            <div>
-                <button onclick="add_mails('spam')">add mails</button>
-                <button onclick="swap_two('spam')">swap two mails</button>
-                <button onclick="delete_two('spam')">delete two mails</button>
-                <button onclick="sort_mail('spam')")">sort mails</button>
-                <button onclick="reverse_mail('spam')")">reverse mails</button>
-            </div>
-            <div id="list-mail-spam" >
-
+                </table>
             </div>
         </div>
         <div id="notify-mail" style="display:none" >
             <div>
-                <button onclick="add_mails('notify')">add mails</button>
-                <button onclick="swap_two('notify')">swap two mails</button>
-                <button onclick="delete_two('notify')">delete two mails</button>
-                <button onclick="sort_mail('notify')")">sort mails</button>
-                <button onclick="reverse_mail('notify')")">reverse mails</button>
-            </div>
-            <div id="list-mail-notify" >
+                <table class="email-notify" style="width:100%" >
+                    <thead>
+                        <th class="notify-checkbox-th">op</th>
+                        <th class="notify-recipient-th">sender</th>
+                        <th class="notify-subject-th">subject</th>
+                        <th class="notify-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-notify" class="email-notify" style="width:100%" >
 
+                </table>
+            </div>
+        </div>
+        <div id="sent-mail" style="display:none" >
+            <div>
+                <table class="email-sent" style="width:100%" >
+                    <thead>
+                        <th class="sent-checkbox-th">op</th>
+                        <th class="sent-recipient-th">sender</th>
+                        <th class="sent-subject-th">subject</th>
+                        <th class="sent-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-sent" class="email-sent" style="width:100%" >
+
+                </table>
+            </div>
+        </div>
+        <div id="drafts-mail" style="display:none" >
+            <div>
+                <table class="email-drafts" style="width:100%" >
+                    <thead>
+                        <th class="drafts-checkbox-th">op</th>
+                        <th class="drafts-recipient-th">sender</th>
+                        <th class="drafts-subject-th">subject</th>
+                        <th class="drafts-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-drafts" class="email-drafts" style="width:100%" >
+
+                </table>
+            </div>
+        </div>
+        <div id="spam-mail" style="display:none" >
+            <div>
+                <table class="email-spam" style="width:100%" >
+                    <thead>
+                        <th class="spam-checkbox-th">op</th>
+                        <th class="spam-recipient-th">sender</th>
+                        <th class="spam-subject-th">subject</th>
+                        <th class="spam-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-spam" class="email-spam" style="width:100%" >
+
+                </table>
             </div>
         </div>
         <div id="trash-mail" style="display:none" >
             <div>
-                <button onclick="add_mails('trash')">add mails</button>
-                <button onclick="swap_two('trash')">swap two mails</button>
-                <button onclick="delete_two('trash')">delete two mails</button>
-                <button onclick="sort_mail('trash')")">sort mails</button>
-                <button onclick="reverse_mail('trash')")">reverse mails</button>
-            </div>
-            <div id="list-mail-trash" >
+                <table class="email-trash" style="width:100%" >
+                    <thead>
+                        <th class="trash-checkbox-th">op</th>
+                        <th class="trash-recipient-th">sender</th>
+                        <th class="trash-subject-th">subject</th>
+                        <th class="trash-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-mail-trash" class="email-trash" style="width:100%" >
 
+                </table>
             </div>
         </div>
-<!--
-        <div>
-            <button onclick="update_some_tweet()">change data</button>
-            <button onclick="replace_tweets()">replace data</button>
-            <button onclick="change_tweets()">change_tweets</button>
-        </div>
-        <div id="tweets" >
-
-        </div>
--->
     </main>
+
+
+
+
+
+
+<div id="email_view" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'email_view')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div id="email_message_contents" >
+                This is the email to view
+            </div>
+		</div>
+	</div>
+</div>
+
 
 </body>
 </html>
@@ -334,67 +702,24 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 
     let date = new Date()
-    let one_mail =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    let one_mail =  {   "id" : 1, "sender" : "mail@b.com", 
+                        "subject" : "this is a test",
+                        "date" : date.toLocaleString(),
+                        "text" : "every message might have some text"
+                    }
     mail_managers['inbox'].store.push(one_mail)
 
-    let one_sent =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    let one_sent =  { "id" : 2, "recipient" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString(),
+                        "text" : "sent message that might have some text" }
     mail_managers['sent'].store.push(one_sent)
 
 
-    let one_drafts =  { "sender" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString() }
+    let one_drafts =  { "id" : 3, "recipient" : "mail@b.com", "subject" : "this is a test",
+                        "date" : date.toLocaleString(),
+                        "text" : "wrote message that might have some text" 
+                     }
     mail_managers['drafts'].store.push(one_drafts)
 
-
-    // function update_some_tweet() {
-    //     let b = Math.floor(Math.random()*3)
-    //     b = Math.min(b,(data.length-1))
-    //     let tweet = data[b]
-    //     let n = tweet.tweets.length
-    //     let t  = Math.floor(Math.random()*n)
-    //     t = Math.min(t,(n-1))
-    //     let last_t = tweet.tweets[t]
-    //     data[b].last_tweet = last_t
-    // }
-
-    // function change_tweets() {
-
-    //     let b = Math.floor(Math.random()*3)
-    //     b = Math.min(b,(data.length-1))
-
-    //     let tweet = data[b]
-    //     let n = tweet.tweets.length
-    //     let t  = Math.floor(Math.random()*n)
-    //     t = Math.min(t,(n-1))
-
-    //     tweet.tweets[t] = "up" + Date.now()
-    //     //
-    //     a_view.render(data)
-    // }
-
-    // function replace_tweets() {
-    //     const updata = [{
-    //             username: "User Q",
-    //             last_tweet: "foo",
-    //             tweets: ["who", "knew", "you"]
-    //         },{
-    //             username: "User R",
-    //             last_tweet: "who",
-    //             tweets: ["he", "told", "them"]
-    //         },{
-    //             username: "User S",
-    //             last_tweet: "grew",
-    //             tweets: ["have", "a", "nice", "day"]
-    //         }];
-
-    //     data = updata
-    //     a_view.render(data)
-    // }
-
-    // window.update_some_tweet = update_some_tweet
-
-    // window.replace_tweets = replace_tweets
-
-    // window.change_tweets = change_tweets
 
     function store_of_mail_manager(mtype) {
         let mobj = mail_managers[mtype]
@@ -406,18 +731,37 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         return false
     }
 
-    
+    window.store_of_mail_manager = store_of_mail_manager
 
+    /** --------------------------- */
+    let g_current_mtype = "inbox"
     let bunch_of_mails = [
-        { "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString() },
-        { "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString() },
-        { "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString() },
-        { "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString() },
-        { "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString() },
+        { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(),
+                        "text" : "got 1 message that might have some text"  },
+        { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(),
+                        "text" : "got 2 message that might have some text" },
+        { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(),
+                        "text" : "got 3 message that might have some text" },
+        { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(),
+                        "text" : "got 4 message that might have some text" },
+        { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(),
+                        "text" : "got 5 message that might have some text" },
     ]
+    let start_id = 4;
+    //
     window.add_mails = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         let new_mail_bunch = structuredClone(bunch_of_mails)
+        for ( let m of new_mail_bunch ) {
+            start_id++
+            m.id = start_id
+        }
+        if ( (mtype === "drafts") || (mtype === "sent") ) {
+            for ( let m of new_mail_bunch ) {
+                m.recipient = m.sender
+            }
+        }
         if ( mail_store ) {
             if ( mail_store.length ) {
                 mail_store.concat(new_mail_bunch)
@@ -428,16 +772,19 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     window.swap_two = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         if ( mail_store ) mail_store.swap(2,5)
     }
 
     window.delete_two = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         if ( mail_store ) mail_store.splice(3,2)
     }
 
     window.sort_mail = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         if ( mail_store ) mail_store.sort((a,b) => {
             if ( a.sender > b.sender ) return 1
@@ -447,6 +794,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     window.reverse_mail = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         if ( mail_store ) mail_store.reverse()
     }
@@ -455,6 +803,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     let mtype_title = document.getElementById("mail-type-title")
 
     window.mail_switch_to  = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
         for ( let one_mtype in mail_managers ) {
             let mobj = mail_managers[one_mtype]
             if ( mobj.container_el ) {
@@ -467,6 +816,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 mobj.container_el.style.display = "block"
                 //
                 mtype_title.innerText = mtype
+                g_current_mtype = mtype
             }            
         }
     }
@@ -498,5 +848,500 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     }
 
+    function get_text_from_store(mtype,msg_id) {
+        let mail_store = store_of_mail_manager(mtype)
+        let clear_text = "message not found"
+        if ( mail_store ) {
+            let the_msg = false
+            mail_store.forEach(msg => {
+                if ( msg.id === msg_id ) {
+                    the_msg = msg
+                }
+            })
+            if ( the_msg ) {
+                clear_text = the_msg.text
+            }
+        }
+
+        return clear_text
+    }
+
+    // ['inbox','sent','drafts','spam','notify','trash']
+    // VIEW WINDOW
+    function edit_from_draft(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            let clear_text = get_text_from_store("drafts",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+    //
+    function view_from_inbox(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            let clear_text = get_text_from_store("inbox",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+    //
+    function view_from_notify(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            let clear_text = get_text_from_store("notify",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+    //
+    function view_from_sent(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            let clear_text = get_text_from_store("sent",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+    //
+    function view_from_spam(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            let clear_text = get_text_from_store("spam",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+    //
+    function view_from_trash(msg_id) {
+        let sect_box = `#email_view`
+        let msg_view = document.getElementById("email_message_contents")
+        if ( msg_view ) {
+            msg_view.innerHTML = `picked message id = ${msg_id}`
+            let clear_text = get_text_from_store("trash",msg_id)
+            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
+    }
+
+
+    function toggle_ul(ev,category) {
+        ev.preventDefault = true
+        ev.cancelBubble = true
+
+        let dn_ar = document.getElementById(`ardn-${category}`)
+        let rt_ar = document.getElementById(`arrt-${category}`)
+        let mul = document.getElementById(`ul-${category}`)
+        if ( dn_ar && rt_ar && mul ) {
+            if ( rt_ar.style.display === "none" ) {
+                rt_ar.style.display = "inline-block"
+                dn_ar.style.display = "none"
+                mul.style.display = "none"
+            } else {
+                rt_ar.style.display = "none"
+                dn_ar.style.display = "inline-block"
+                mul.style.display = "block"
+            }
+        }
+    }
+
+
+
+</script>
+<script>
+
+// https://github.com/omgovich/colord
+
+//let all_windows = {}
+
+// ---->>>
+
+// === ---------------------------------------  === ---------------------------------------  === --------------------------------------- 
+// ANIMATION
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+//
+
+var g_apparition = null;
+var g_current_pin = null;
+var g_fade_scheduled = null;
+var g_defade_scheduled = null;
+
+
+function hideFader(fdr) {
+	fdr.style.visibility = "hidden"
+    fdr.style.display = "none"
+	// fdr.style.zIndex = -10
+	stopDefade()
+	stopFade()
+	g_apparition = null;
+	g_current_pin = null;
+}
+
+function closefader(ev,whichFader) {
+    ev.stopPropagation()
+	clear_pin_time()
+	let fdr = document.querySelector('#' + whichFader);
+	hideFader(fdr)
+}
+
+function closesolid(whichSolid) {
+	let sld = document.querySelector('#' + whichSolid);
+	sld.style.visibility = "hidden"
+	sld.style.display = "none";
+}
+// ---- ---- ---- ---- ---- ----
+
+let g_pin_time = false
+function newest_pin(pinned) {
+	g_pin_time = Date.now()
+	setTimeout(() => { g_pin_time = false }, 5500 )
+}
+
+function recent_pin(pinned) {
+	if ( g_pin_time === false ) {
+		return false
+	}
+	let check_time = Date.now()
+	if ( (check_time - g_pin_time)  > 5000 ) {
+		g_pin_time = false
+		return false
+	}
+	return true
+}
+
+function clear_pin_time() {
+	g_pin_time = false
+}
+
+
+function unpin_current(timeless) {
+	if ( g_current_pin && !timeless && recent_pin(g_current_pin) ) {
+		return false
+	}
+	if ( g_current_pin != null ) {
+        g_current_pin.style.visibility = "hidden";
+		g_current_pin.style.display = "none";
+//		g_current_pin.style.zIndex = -10
+	}
+	return true
+}
+function fade_apparition(btn,evt) {
+	if ( g_apparition !== null ) {
+		var fader = g_apparition;
+		//if ( evt ) console.log(fader.offsetWidth + "," + evt.clientX + "," + window.innerWidth)
+		if ( ( evt !== undefined )&& (fader.offsetWidth >= evt.clientX) ) {
+			return;
+		}
+		stopDefade()
+		g_defade_scheduled = setInterval(() => { lowerAlpha(fader); },g_fader_interval);
+	}
+}
+function stopDefade() {
+	if ( g_defade_scheduled != null ) {
+		clearInterval(g_defade_scheduled);
+	}
+}
+function stopFade() {
+	if ( g_fade_scheduled != null ) {
+		clearInterval(g_fade_scheduled);
+	}
+}
+function pin_ItsAlive(pinned) {
+	newest_pin(pinned)
+	if ( pinned && (typeof pinned.openAction === 'function')) {
+		pinned.openAction()
+	}
+	g_apparition = null;
+}
+// ---- ---- ---- ---- ---- ----
+function raiseAlpha(aGhost) {
+	if ( aGhost.style.opacity == 1.0 ) {
+		stopDefade()
+		pinBoxElem(aGhost)
+	} else {
+		aGhost.style.opacity = parseFloat(aGhost.style.opacity) + 0.025;
+	}
+}
+function lowerAlpha(aGhost) {
+	if ( aGhost.style.opacity <= 0.2 ) {
+		hideFader(aGhost)
+	} else {
+		aGhost.style.opacity = parseFloat(aGhost.style.opacity) - 0.1;
+	}
+}
+// ---- ---- ---- ---- ---- ----
+function replaceApparition(newGhost) {
+	if ( !unpin_current() ) {
+		return
+	}
+	if ( g_apparition !== null ) {
+		stopDefade()
+		stopFade()
+        g_apparition.style.display = "none"
+		g_apparition.style.visibility = "hidden";
+//		newGhost.style.zIndex = -10
+	}
+	if ( newGhost !== null ) {
+		newGhost.style.opacity = "0.0"
+        newGhost.style.display = "block"
+		newGhost.style.visibility = "visible"
+//		newGhost.style.zIndex = 200
+		g_apparition = newGhost
+		g_defade_scheduled = setInterval(() => { raiseAlpha(newGhost); },50);
+	}
+}
+
+// ---- ---- ---- ---- ---- ----
+function pinBoxElem(thisPin) {
+	clear_pin_time()
+	// if ( g_current_pin !== thisPin ) unpin_current();
+	g_current_pin = thisPin;
+	stopDefade()
+	thisPin.style.opacity = "0.0"
+    thisPin.style.display = "block"
+	thisPin.style.visibility = "visible"
+//	thisPin.style.zIndex = 200
+	//
+	thisPin.style.opacity = "1.0"
+	pin_ItsAlive(g_current_pin);
+}
+
+function pinBox(selector) {
+    // if ( selector in all_windows ) {
+    //     let winbox = all_windows[selector]
+    //     winbox.show()
+    //     winbox.focus()
+    //     return
+    // }
+	let thisPin = document.querySelector(selector);
+	pinBoxElem(thisPin)
+}
+
+// ---- ---- ---- ---- ---- ----
+function defadeBox(selector) {
+	replaceApparition(document.querySelector(selector));
+}
+
+
+
+let draggers = {}
+let current_dragger = false
+
+let dragger_z_map = {}
+function rotate_z_index(drag_Node) {
+    //
+    let zs = Object.keys(dragger_z_map)
+    let z = zs[zs.length-1]
+    let waz = parseInt(drag_Node.style.zIndex)
+    while ( waz < z ) {
+        let demoted = dragger_z_map[waz+1]
+        dragger_z_map[waz] = demoted
+        demoted.style.zIndex = waz
+        waz++
+    }
+    dragger_z_map[z] = drag_Node
+    drag_Node.style.zIndex = z
+    //
+}
+
+function manage_z_index(drag_bars) {
+
+    let minz = 10000
+
+    for ( let db of drag_bars ) {
+        let pnode = db.parentNode
+        let z = parseInt(pnode.style.zIndex)
+        if ( z < minz ) {
+            minz = z
+        }
+    }
+
+    let z = minz
+    for ( let db of drag_bars ) {
+        let pnode = db.parentNode
+        pnode.style.zIndex = z
+        dragger_z_map[z] = pnode
+        z++
+    }
+
+}
+
+
+function add_dragging() {
+
+    let drag_bars = document.getElementsByClassName("togglebar")
+    manage_z_index(drag_bars)
+    for ( let db of drag_bars ) {
+
+        let cname = db.parentNode.className
+        if ( cname.indexOf(' ') > 0 ) {
+            cname = cname.split(' ')[0]
+        }
+
+        if ( cname === 'solid_able' ) {
+            if ( db.parentNode.id === "intergalactic-explain" ) {
+                cname = "fade_able"
+            }
+        }
+
+        if ( ["fade_able","right_fade_able"].indexOf(cname) >= 0 ) {
+            let drag_Node = db.parentNode
+            draggers[drag_Node.id] = {
+                "offsetX" : 0,
+                "offsetY" : 0,
+                "isDragging" : false,
+                "dragged" : drag_Node,
+                "drag_control" : db
+            }
+
+            db.onmousedown = (e) => {
+                let drag_Node = e.target.parentNode;
+                if ( !draggers[drag_Node.id] ) return
+                rotate_z_index(drag_Node)
+                e.preventDefault()
+                draggers[drag_Node.id].isDragging = true;
+                // Calculate the offset between the mouse position and the div's top-left corner
+                draggers[drag_Node.id].offsetX = e.clientX - drag_Node.getBoundingClientRect().left;
+                draggers[drag_Node.id].offsetY = e.clientY - drag_Node.getBoundingClientRect().top;
+                db.style.cursor = 'grabbing';
+                current_dragger = drag_Node.id
+            }
+
+            db.onmouseup = (ev) => {
+                if ( current_dragger ) {
+                    let dragger_stats = draggers[current_dragger]
+                    let drag_bar = dragger_stats.drag_control
+                    drag_bar.style.cursor = 'move';
+                }
+            }
+        }
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        if (!current_dragger) return;
+
+        if ( current_dragger ) {
+            let dragger_stats = draggers[current_dragger]
+            let drag_Node = dragger_stats.dragged
+            // Calculate new position based on mouse movement and offsetif 
+            if ( drag_Node ) {
+                let mouseX = e.clientX
+                let mouseY = e.clientY
+                //
+                let newX = mouseX - dragger_stats.offsetX;
+                let newY = mouseY - dragger_stats.offsetY;
+                //
+                if ( newX > 5 && newX < window.innerWidth ) {
+                    drag_Node.style.left = `${newX}px`;
+                }
+                //
+                let stopper = document.getElementsByTagName("footer")[0]
+                let stoRect = stopper ? stopper.getBoundingClientRect() : false
+                let maxY = stoRect ? stoRect.top : 500
+                //
+                if ( (newY > 5) && (newY < window.innerHeight) && (newY < maxY )) {
+                    drag_Node.style.top = `${newY}px`;
+                }
+            }
+        }
+
+    });
+
+    document.addEventListener('mouseup', () => {
+        if ( current_dragger ) {
+            let dragger_stats = draggers[current_dragger]
+            let drag_bar = dragger_stats.drag_control
+            drag_bar.style.cursor = 'move';
+        }
+        current_dragger = false
+    });
+
+}
+add_dragging()
+
+
+
+let resizers = {}
+let current_resizer = false
+
+
+function add_resizing() {
+    let sizer_bobs = document.getElementsByClassName("sizerbar")
+    for ( let sb of sizer_bobs ) {
+        let pnode = sb.parentNode
+
+        resizers[pnode.id] = {
+            "isDragging" : false,
+            "dragged" : pnode,
+            "drag_control" : sb
+        }
+
+        sb.onmousedown = (e) => {
+            let pnode = e.target.parentNode;
+            if ( !resizers[pnode.id] ) return
+            e.preventDefault()
+            resizers[pnode.id].isDragging = true;
+            current_resizer = pnode.id
+        }
+  
+    }
+
+
+    document.addEventListener('mousemove', (e) => {
+        if (!current_resizer) return;
+
+        if ( current_resizer ) {
+            let resizer_stats = resizers[current_resizer]
+            let pnode = resizer_stats.dragged
+            // Calculate new position based on mouse movement and offsetif 
+            if ( pnode ) {
+                const newX = e.clientX;
+                const newY = e.clientY;
+                //
+                let brect = pnode.getBoundingClientRect()
+                let newW = newX - brect.left
+                let newH = newY - brect.top
+                //
+                if ( newW > 60 ) {
+                    pnode.style.width = `${newW}px`;
+                }
+                if ( newH > 60 ) {
+                    pnode.style.height = `${newH}px`;
+                }
+            }
+        }
+
+    });
+
+
+    document.addEventListener('mouseup', () => {
+        current_resizer = false
+    });
+
+}
+
+add_resizing()
+
+
+
+// <div id="flow_display_button_ref">${dir_buttons}</div>
+// <div id="flow_display_below_button_ref" class="file-browsers">
+
+document.addEventListener('mousemove',(e) => {
+    if ( !current_resizer ) return
+    let ref_obj = document.getElementById("flow_display_button_ref")
+    let above_ref = document.getElementById("directory_section-breadcrumb")
+    let need_ref_obj = document.getElementById("flow_display_below_button_ref")
+    if ( above_ref && ref_obj && need_ref_obj ) {
+        let refrect = ref_obj.getBoundingClientRect()
+        let aboverect = above_ref.getBoundingClientRect()
+        need_ref_obj.style.top = `${(refrect.height + aboverect.height + 22)}px`
+    }
+})
 
 </script>
