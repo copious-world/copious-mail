@@ -50,7 +50,7 @@
     .right_fade_able {
         position:absolute;
         visibility:hidden;
-        top : 10px; left : 460px;
+        top : 10px; left : 20%;
         height:80%;
         width: 60%;
         z-index:101;
@@ -441,6 +441,32 @@
     .trash-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
 
 
+    .email-editor-body {
+        border: solid 1px rgb(13, 43, 13);
+    }
+
+    .mail-properties {
+        display: grid;
+        grid-template-columns: 20% 1fr;
+        gap: 12px 16px;
+        align-items: center;
+        padding: 16px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        max-width: 600px;
+    }
+
+    .field-label {
+        font-weight: bold;
+        color: #555;
+        text-align: right;
+    }
+
+    .field-value {
+        color: #222;
+        word-break: break-word;
+    }
+
 </style>
 
 <script type="module">
@@ -535,7 +561,7 @@ oicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0
             <h4><button onclick="toggle_ul(event,'manage')">manage <span id="ardn-manage" style="display:inline-block">&#x25BC;</span><span id="arrt-manage" style="display:none">&#x25BA;</span></button></h4>
             <ul id="ul-manage">
                 <li><button onclick="contacts_ui()" >contacts</button></li>
-                <li><button onclick="search_ui('contacts')" >search contact</button></li>
+                <li><button onclick="search_ui('contacts')" >search contacts</button></li>
                 <li><button onclick="search_ui('messages')" >search messages</button></li>
                 <li><button onclick="manage_prefs()" >preferences</button></li>
             </ul>
@@ -604,7 +630,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 <table class="email-drafts" style="width:100%" >
                     <thead>
                         <th class="drafts-checkbox-th">op</th>
-                        <th class="drafts-recipient-th">sender</th>
+                        <th class="drafts-recipient-th">recipient</th>
                         <th class="drafts-subject-th">subject</th>
                         <th class="drafts-date-th">time</th>
                     </thead>
@@ -657,6 +683,19 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
+        <div class="mail-properties">
+            <div class="field-label">From:</div>
+            <div id="view-email-sender" class="field-value">sender@example.com</div>
+            
+            <div class="field-label">To:</div>
+            <div id="view-email-recipient" class="field-value">recipient@example.com</div>
+            
+            <div class="field-label">Subject:</div>
+            <div id="view-email-subject" class="field-value">Project Update &amp; Next Steps</div>
+            
+            <div class="field-label">Date:</div>
+            <div id="view-email-date" class="field-value">September 14, 2026, 12:51 PM</div>
+        </div>
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
             <div id="email_message_contents" >
                 This is the email to view
@@ -665,30 +704,43 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 	</div>
 </div>
 
+<div id="email_edit" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'email_edit')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+        <div class="mail-properties">
+            <div class="field-label">From:</div>
+            <div class="field-value"><input id="edit-email-sender" type="email" /></div>
+            
+            <div class="field-label">To:</div>
+            <div class="field-value"><input id="edit-email-recipient" type="email" /></div>
+            
+            <div class="field-label">Subject:</div>
+            <div class="field-value"></label><input id="edit-email-subject" type="text" /></div>
+
+            <div class="field-label">Last edit:</div>
+            <div id="edit-email-date" class="field-value">September 14, 2026, 12:51 PM</div>
+        </div>
+
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="email-editor-body" id="email_message_contents_edit" contenteditable="true" >
+                This is the email to view
+            </div>
+		</div>
+	</div>
+</div>
+
+
 
 </body>
 </html>
 <script type="module">
 
     const mail_managers = window._x_share_mail_managers
-    
-    
-    // let data = [{
-    //         username: "User A",
-    //         last_tweet: "foo",
-    //         tweets: ["foo", "bar", "foobar"]
-    //     },{
-    //         username: "User B",
-    //         last_tweet: "who",
-    //         tweets: ["foo", "bar", "foobar"]
-    //     },{
-    //         username: "User C",
-    //         last_tweet: "grew",
-    //         tweets: ["foo", "bar", "foobar"]
-    //     }];
     //
     let mail_main = document.getElementById("mail-main")
-    // let tweets = document.getElementById("tweets")
 
 
     for ( let mtype in mail_managers ) {
@@ -700,22 +752,29 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
-
     let date = new Date()
-    let one_mail =  {   "id" : 1, "sender" : "mail@b.com", 
+    let start_id_for_testing = 1;
+    let one_mail =  {   "id" : start_id_for_testing++, "sender" : "mail@b.com", 
                         "subject" : "this is a test",
+                        "recipient" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
+                        "timestamp" : date.getTime(),
                         "text" : "every message might have some text"
                     }
     mail_managers['inbox'].store.push(one_mail)
 
-    let one_sent =  { "id" : 2, "recipient" : "mail@b.com", "subject" : "this is a test", "date" : date.toLocaleString(),
+    let one_sent =  { "id" : start_id_for_testing++, "recipient" : "mail@b.com", "subject" : "this is a test",
+                        "sender" : "richard@myhost.local",
+                        "date" : date.toLocaleString(),
+                        "timestamp" : date.getTime(),
                         "text" : "sent message that might have some text" }
     mail_managers['sent'].store.push(one_sent)
 
 
-    let one_drafts =  { "id" : 3, "recipient" : "mail@b.com", "subject" : "this is a test",
+    let one_drafts =  { "id" : start_id_for_testing++, "recipient" : "mail@b.com", "subject" : "this is a test",
+                        "sender" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
+                        "timestamp" : date.getTime(),
                         "text" : "wrote message that might have some text" 
                      }
     mail_managers['drafts'].store.push(one_drafts)
@@ -736,40 +795,82 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     /** --------------------------- */
     let g_current_mtype = "inbox"
     let bunch_of_mails = [
-        { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(),
+        { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "richard@myhost.local",
                         "text" : "got 1 message that might have some text"  },
-        { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(),
+        { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "richard@myhost.local",
                         "text" : "got 2 message that might have some text" },
-        { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(),
+        { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "richard@myhost.local",
                         "text" : "got 3 message that might have some text" },
-        { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(),
+        { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "richard@myhost.local",
                         "text" : "got 4 message that might have some text" },
-        { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(),
+        { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "richard@myhost.local",
                         "text" : "got 5 message that might have some text" },
     ]
-    let start_id = 4;
+    //
+    //
+    window.largest_id = start_id_for_testing
+
+    window.get_next_id = () => {
+        window.largest_id++
+        return window.largest_id
+    }
+
+
+    //
+    let mail_proto = { "id" : 1, "sender" : "richard@myhost.local", "subject" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "recipient" : "",
+                        "text" : "edit this message"  }
     //
     window.add_mails = (mtype) => {
         if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         let new_mail_bunch = structuredClone(bunch_of_mails)
         for ( let m of new_mail_bunch ) {
-            start_id++
-            m.id = start_id
+            m.id = get_next_id()
+            //
+            let d = new Date()
+            m.date = d.toLocaleString()
+            m.timestamp = d.getTime()
         }
         if ( (mtype === "drafts") || (mtype === "sent") ) {
             for ( let m of new_mail_bunch ) {
+                let recip = m.recipient
                 m.recipient = m.sender
+                m.sender = recip
             }
         }
+
         if ( mail_store ) {
             if ( mail_store.length ) {
-                mail_store.concat(new_mail_bunch)
+                for ( let m of new_mail_bunch ) {
+                    mail_store.unshift(m)
+                }
             } else {
                 mail_store.set(new_mail_bunch)
             }
         }
+
+        sort_mail(mtype)
     }
+
+    window.add_empty_draft = (id) => {
+        let mtype = "drafts"
+        let mail_store = store_of_mail_manager(mtype)
+        let new_mail = structuredClone(mail_proto)
+        new_mail.id = id
+        //
+        if ( mail_store ) {
+            mail_store.unshift(new_mail)
+            return new_mail
+        }
+        return false
+    }
+
 
     window.swap_two = (mtype) => {
         if ( mtype === undefined ) mtype = g_current_mtype
@@ -787,10 +888,23 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         if ( mtype === undefined ) mtype = g_current_mtype
         let mail_store = store_of_mail_manager(mtype)
         if ( mail_store ) mail_store.sort((a,b) => {
-            if ( a.sender > b.sender ) return 1
-            if ( a.sender < b.sender ) return -1
+            if ( a.timestamp < b.timestamp ) return 1
+            if ( a.timestamp > b.timestamp ) return -1
             return 0
         })
+    }
+
+    window.sort_one_or_more = (mtype) => {
+        if ( mtype === undefined ) mtype = g_current_mtype
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) {
+            if ( mail_store.length === 1 ) {
+                let obj = mail_store.pop()
+                mail_store.push(obj)
+            } else {
+                sort_mail(mtype)
+            }
+        }
     }
 
     window.reverse_mail = (mtype) => {
@@ -836,17 +950,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     // open windows
-    function mail_create() {
 
-    }
-
-    function contacts_ui() {
-
-    }
-
-    function manage_prefs() {
-
-    }
 
     function get_text_from_store(mtype,msg_id) {
         let mail_store = store_of_mail_manager(mtype)
@@ -862,26 +966,173 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 clear_text = the_msg.text
             }
         }
-
         return clear_text
     }
 
-    // ['inbox','sent','drafts','spam','notify','trash']
-    // VIEW WINDOW
-    function edit_from_draft(msg_id) {
-        let sect_box = `#email_view`
-        let msg_view = document.getElementById("email_message_contents")
+
+    function get_message_from_store(mtype,msg_id) {
+        let mail_store = store_of_mail_manager(mtype)
+        //
+        if ( mail_store ) {
+            let the_msg = false
+            mail_store.forEach(msg => {
+                if ( msg.id === msg_id ) {
+                    the_msg = msg
+                }
+            })
+            if ( the_msg ) {
+                return the_msg
+            }
+        }
+        //
+        return false
+    }
+
+    
+
+    // EDIT WINDOW  ['drafts'] and create
+
+    // change support
+    function update_mail_properties_edit(mtype,msg_id) {
+        //
+        let message = get_message_from_store(mtype,msg_id)
+        if ( message ) {
+            g_current_edit_email = message
+            //
+            let m_prop_el = document.getElementById("edit-email-sender")
+            if ( m_prop_el ) { m_prop_el.value = message.sender }
+            m_prop_el = document.getElementById("edit-email-recipient")
+            if ( m_prop_el ) { m_prop_el.value = message.recipient }
+            m_prop_el = document.getElementById("edit-email-subject")
+            if ( m_prop_el ) { m_prop_el.value = message.subject }
+            m_prop_el = document.getElementById("edit-email-date")
+            if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
+        } else {
+            alert("no message")
+        }
+        //
+    }
+
+    function update_just_date(message) {
+        let date = new Date()
+        if ( message ) {  
+            message.date = date.toLocaleString()
+            message.timestamp = date.getTime()
+        } else return
+        let m_prop_el = document.getElementById("edit-email-date")
+        if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
+        sort_one_or_more('drafts')
+    }
+
+
+    let g_current_edit_email = false
+    function setup_edit_response() {
+        //
+        let msg_editor = document.getElementById("email_message_contents_edit")
+        if ( msg_editor ) {
+            msg_editor.addEventListener('input', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.text = event.target.innerHTML
+                    update_just_date(g_current_edit_email)
+                }
+            });
+        }
+        //
+        let m_prop_el = document.getElementById("edit-email-sender")
+        if ( m_prop_el ) {
+            m_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.sender = event.target.value
+                    update_just_date(g_current_edit_email)
+                }
+            });
+        }
+        //
+        m_prop_el = document.getElementById("edit-email-recipient")
+        if ( m_prop_el ) {
+            m_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.recipient = event.target.value
+                    update_just_date(g_current_edit_email)
+                }
+            });
+        }
+        //
+        m_prop_el = document.getElementById("edit-email-subject")
+        if ( m_prop_el ) {
+            m_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.subject = event.target.value
+                    update_just_date(g_current_edit_email)
+                }
+            });
+        }
+    }
+
+ 
+    function mail_create() {
+        let sect_box = `#email_edit`
+        let msg_view = document.getElementById("email_message_contents_edit")
         if ( msg_view ) {
+           let id = get_next_id()
+            let draft = add_empty_draft(id)
+            if ( draft ) {
+                let msg_id = draft.id
+                draft.text = ""
+                let clear_text = draft.text
+                msg_view.innerHTML = `adding message id = ${msg_id}
+                <br> ${clear_text}
+                <br> will be adding text here`
+                //
+                g_current_edit_email = draft
+                update_mail_properties_edit("drafts",msg_id)
+            }
+        }
+        pinBox(sect_box)
+    }
+
+    function edit_from_draft(msg_id) {
+        let sect_box = `#email_edit`
+        let msg_view = document.getElementById("email_message_contents_edit")
+        if ( msg_view ) {
+            update_mail_properties_edit("drafts",msg_id)
             let clear_text = get_text_from_store("drafts",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
         pinBox(sect_box)
     }
+
+    setup_edit_response()
+
+    // 
+    // VIEW WINDOW ['inbox','sent','spam','notify','trash']
     //
+
+    // item view support
+    function update_mail_properties_view(mtype,msg_id) {
+        //
+        let message = get_message_from_store(mtype,msg_id)
+        if ( message ) {
+            g_current_edit_email = message
+            let m_prop_el = document.getElementById("view-email-sender")
+            if ( m_prop_el ) { m_prop_el.innerHTML = message.sender }
+            m_prop_el = document.getElementById("view-email-recipient")
+            if ( m_prop_el ) { m_prop_el.innerHTML = message.recipient }
+            m_prop_el = document.getElementById("view-email-subject")
+            if ( m_prop_el ) { m_prop_el.innerHTML = message.subject }
+            m_prop_el = document.getElementById("view-email-date")
+            if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
+        }
+        //
+    }
+
+    //
+
     function view_from_inbox(msg_id) {
         let sect_box = `#email_view`
         let msg_view = document.getElementById("email_message_contents")
         if ( msg_view ) {
+            update_mail_properties_view("inbox",msg_id)
             let clear_text = get_text_from_store("inbox",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
@@ -892,6 +1143,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         let sect_box = `#email_view`
         let msg_view = document.getElementById("email_message_contents")
         if ( msg_view ) {
+            update_mail_properties_view("notify",msg_id)
             let clear_text = get_text_from_store("notify",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
@@ -902,6 +1154,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         let sect_box = `#email_view`
         let msg_view = document.getElementById("email_message_contents")
         if ( msg_view ) {
+            update_mail_properties_view("sent",msg_id)
             let clear_text = get_text_from_store("sent",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
@@ -912,6 +1165,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         let sect_box = `#email_view`
         let msg_view = document.getElementById("email_message_contents")
         if ( msg_view ) {
+            update_mail_properties_view("spam",msg_id)
             let clear_text = get_text_from_store("spam",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
@@ -922,7 +1176,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         let sect_box = `#email_view`
         let msg_view = document.getElementById("email_message_contents")
         if ( msg_view ) {
-            msg_view.innerHTML = `picked message id = ${msg_id}`
+            update_mail_properties_view("trash",msg_id)
             let clear_text = get_text_from_store("trash",msg_id)
             msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
         }
@@ -951,6 +1205,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
+
+    function contacts_ui() {
+
+    }
+
+    function manage_prefs() {
+
+    }
 
 </script>
 <script>
