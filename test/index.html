@@ -320,6 +320,27 @@
     }
 
     /** list styling **/
+
+
+    .inbox_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+    .sent_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+    .spam_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+    .notify_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+    .drafts_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+    .trash_check_select {
+        border:solid 1px rgba(255, 0, 0, 0.438);
+    }
+
     /* drafts list */
     .email-drafts {
         background-color: white;
@@ -339,6 +360,14 @@
     .ed-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
     .ed-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .ed-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    .email-drafts th > button {
+        color: navy;
+    }
+    .email-drafts th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
 
     /* sent list */
     .email-sent {
@@ -360,6 +389,15 @@
     .sent-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .sent-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
 
+    .email-sent th > button {
+        color: navy;
+    }
+    .email-sent th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
+
+    
     /* inbox list */
     .email-inbox { 
         background-color: white; 
@@ -379,6 +417,15 @@
     .in-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
     .in-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .in-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    .email-inbox th > button {
+        color: navy;
+    }
+    .email-inbox th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
+
 
     /* notify list */
     .email-notify { 
@@ -400,6 +447,14 @@
     .notify-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .notify-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
 
+    .email-notify th > button {
+        color: navy;
+    }
+    .email-notify th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
+
     /* spam list */
     .email-spam { 
         background-color: white; 
@@ -419,6 +474,14 @@
     .spam-recipient-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
     .spam-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .spam-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    .email-spam th > button {
+        color: navy;
+    }
+    .email-spam th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
 
     /* trash list */
     .email-trash { 
@@ -440,12 +503,30 @@
     .trash-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .trash-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
 
+    .email-trash th > button {
+        color: navy;
+    }
+    .email-trash th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
 
     .email-editor-body {
         border: solid 1px rgb(13, 43, 13);
     }
 
     .mail-properties {
+        display: grid;
+        grid-template-columns: 20% 1fr;
+        gap: 12px 16px;
+        align-items: center;
+        padding: 16px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        max-width: 600px;
+    }
+
+    .contact-properties {
         display: grid;
         grid-template-columns: 20% 1fr;
         gap: 12px 16px;
@@ -467,6 +548,35 @@
         word-break: break-word;
     }
 
+    /** contact list **/
+
+    .contact-list { 
+        background-color: white; 
+    }
+    .contact-list tr:hover td, tr:hover th {
+        background-color: #e0e0e0;
+    }
+    .contact-list > thead  th { 
+        background-color: #e6f0d4ff; 
+    }
+    .contact-checkbox-th { background-color: white; cursor: pointer; width: 5%;}
+    .contact-name-th { background-color: white; cursor: pointer; width: 25%; }
+    .contact-email-th { background-color: white; cursor: pointer; width: 33%; }
+    .contact-date-th { background-color: white; cursor: pointer; width: 33%; }
+    /* ----   */
+    .contact-checkbox-cell { background-color: white; cursor: pointer; width: 5%; }
+    .contact-name-cell { background-color: white; cursor: pointer; width: 25%; padding-left: 4%; }
+    .contact-email-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+    .contact-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
+
+    .contact-list th > button {
+        color: navy;
+    }
+    .contact-list th > button:hover {
+        color: green;
+        background-color: #f7fddcff;
+    }
+
 </style>
 
 <script type="module">
@@ -485,6 +595,7 @@
     import spam_template from "./tpl/partial/spam_list.js";
     import notify_template from "./tpl/partial/notify_list.js";
     import trash_template from "./tpl/partial/trash_list.js";
+    import contacts_template from "./tpl/partial/contact_list.js";
 
     let mail_imports = {
         "inbox" : inbox_template,
@@ -492,10 +603,11 @@
         'drafts' : draft_template,
         'spam' : spam_template,
         'notify' : notify_template,
-        'trash' : trash_template
+        'trash' : trash_template,
+        'contacts' : contacts_template
     }
     //
-    let mail_classes = ['inbox','sent','drafts','spam','notify','trash']
+    let mail_classes = ['inbox','sent','drafts','spam','notify','trash', 'contacts']
     let mail_management = {}
 
     for ( let mtype of mail_classes ) {
@@ -511,6 +623,7 @@
     }
 
     window._x_share_mail_managers = mail_management
+    window._x_share_mail_classes = ['inbox','sent','drafts','spam','notify','trash', 'contacts']
 
 </script>
 </head>
@@ -525,6 +638,7 @@
     <button onclick="delete_two()">delete two mails</button>
     <button onclick="sort_mail()">sort mails</button>
     <button onclick="reverse_mail()">reverse mails</button>
+    <button onclick="add_contacts()">add contacts</button>
 </div>
 
 <details id="squash_container" class="squash_m" >
@@ -584,7 +698,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-inbox" style="width:100%" >
                     <thead>
-                        <th class="in-checkbox-th">op</th>
+                        <th class="in-checkbox-th"><button onclick="do_op_modal('inbox')">op</button></th>
                         <th class="in-recipient-th">sender</th>
                         <th class="in-subject-th">subject</th>
                         <th class="in-date-th">time</th>
@@ -599,7 +713,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-notify" style="width:100%" >
                     <thead>
-                        <th class="notify-checkbox-th">op</th>
+                        <th class="notify-checkbox-th"><button onclick="do_op_modal('notify')">op</button></th>
                         <th class="notify-recipient-th">sender</th>
                         <th class="notify-subject-th">subject</th>
                         <th class="notify-date-th">time</th>
@@ -614,7 +728,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-sent" style="width:100%" >
                     <thead>
-                        <th class="sent-checkbox-th">op</th>
+                        <th class="sent-checkbox-th"><button onclick="do_op_modal('sent')">op</button></th>
                         <th class="sent-recipient-th">sender</th>
                         <th class="sent-subject-th">subject</th>
                         <th class="sent-date-th">time</th>
@@ -629,7 +743,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-drafts" style="width:100%" >
                     <thead>
-                        <th class="drafts-checkbox-th">op</th>
+                        <th class="drafts-checkbox-th"><button onclick="do_op_modal('drafts')">op</button></th>
                         <th class="drafts-recipient-th">recipient</th>
                         <th class="drafts-subject-th">subject</th>
                         <th class="drafts-date-th">time</th>
@@ -644,7 +758,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-spam" style="width:100%" >
                     <thead>
-                        <th class="spam-checkbox-th">op</th>
+                        <th class="spam-checkbox-th"><button onclick="do_op_modal('spam')">op</button></th>
                         <th class="spam-recipient-th">sender</th>
                         <th class="spam-subject-th">subject</th>
                         <th class="spam-date-th">time</th>
@@ -659,7 +773,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div>
                 <table class="email-trash" style="width:100%" >
                     <thead>
-                        <th class="trash-checkbox-th">op</th>
+                        <th class="trash-checkbox-th"><button onclick="do_op_modal('trash')">op</button></th>
                         <th class="trash-recipient-th">sender</th>
                         <th class="trash-subject-th">subject</th>
                         <th class="trash-date-th">time</th>
@@ -670,6 +784,23 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 </table>
             </div>
         </div>
+
+        <div id="human-contacts" style="display:none" >
+            <div>
+                <table class="contact-list" style="width:100%" >
+                    <thead>
+                        <th class="contact-checkbox-th"><button onclick="do_contact_op_modal()">op</button></th>
+                        <th class="contact-name-th">name</th>
+                        <th class="contact-email-th">email</th>
+                        <th class="contact-date-th">time</th>
+                    </thead>
+                </table>
+                <table id="list-contacts" class="contact-list" style="width:100%" >
+
+                </table>
+            </div>
+        </div>
+
     </main>
 
 
@@ -733,6 +864,109 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 </div>
 
 
+<div id="contact_view" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'contact_view')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+        <div>
+            <button id="contact_edit_mode_select" onclick="contact_edit_mode_toggle(event)">edit</button>
+            <button id="contact_edit_mode_cancel" onclick="contact_edit_mode_reset(event)"  style="display: none;">cancel</button>
+            <button id="contact_launch_compose" onclick="contact_launch_compose(event)">compose message</button>
+            <button id="contact_remove" onclick="remove_on_contact(event)">remove contact</button>
+        </div>
+        <div id="contact-properties-view" class="contact-properties" style="display: grid;">
+            <div class="field-label">Name:</div>
+            <div id="view-contact-name" class="field-value">Sender Upper</div>
+            
+            <div class="field-label">Email:</div>
+            <div id="view-contact-email" class="field-value">contact@example.com</div>
+
+            <div class="field-label">Date:</div>
+            <div id="view-contact-date" class="field-value">September 14, 2026, 12:51 PM</div>
+        </div>
+        <div id="contact-properties-edit" class="contact-properties" style="display: none;">
+            <div class="field-label">Name:</div>
+            <div class="field-value"><input id="edit-contact-name" type="text" /></div>
+            
+            <div class="field-label">Email:</div>
+            <div class="field-value"><input id="edit-contact-email" type="email" /></div>
+
+            <div class="field-label">Date:</div>
+            <div id="edit-contact-date" class="field-value">September 14, 2026, 12:51 PM</div>
+        </div>
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="email-editor-body" id="contact_contents_edit" contenteditable="true" >
+                Contact record info
+            </div>
+		</div>
+	</div>
+</div>
+
+
+<!--
+* Drafts can delete, move to trash, or be sent (sending moves to sent).
+* Sent can move to archive, or copy to drafts.
+* Inbox can move to trash, to spam, or notify
+* Spam can move to trash, to inbox, or notify
+* Notify can move to trash, to inbox, or to spam
+* Trash can permanently delete a message, or move to inbox, or notify
+-->
+<dialog id="email-ops-modal" style="min-width: 300px;">
+    <div id="email-ops-drafts" style="display: none;" >
+        <button onclick="prep_send_email_list('drafts')">send</button>
+        <button onclick="prep_email_list_move_to('drafts','trash')">move to trash</button>
+    </div>
+    <div id="email-ops-sent" style="display: none;" >
+        <button onclick="prep_email_list_move_to('sent','archive')">archive</button>
+        <button onclick="prep_email_list_copy_to('sent','drafts')">copy to drafts</button>
+    </div>
+    <div id="email-ops-inbox" style="display: none;" >
+        <button onclick="prep_email_list_move_to('inbox','trash')">move to trash</button>
+        <button onclick="prep_email_list_move_to('inbox','spam')">move to spam</button>
+        <button onclick="prep_email_list_move_to('inbox','notfify')">move to notify</button>
+    </div>
+    <div id="email-ops-spam" style="display: none;" >
+        <button onclick="prep_email_list_move_to('spam','trash')">move to trash</button>
+        <button onclick="prep_email_list_move_to('spam','inbox')">move to inbox</button>
+        <button onclick="prep_email_list_move_to('spam','notfify')">move to notify</button>
+    </div>
+    <div id="email-ops-notify" style="display: none;" >
+        <button onclick="prep_email_list_move_to('notify','trash')">move to trash</button>
+        <button onclick="prep_email_list_move_to('notify','inbox')">move to inbox</button>
+        <button onclick="prep_email_list_move_to('notify','spam')">move to spam</button>
+    </div>
+    <div id="email-ops-trash" style="display: none;" >
+        <button onclick="prep_email_list_delete('trash')">delete</button>
+        <button onclick="prep_email_list_move_to('trash','inbox')">move to inbox</button>
+        <button onclick="prep_email_list_move_to('trash','notfify')">move to notify</button>
+    </div>
+    <form method="dialog">
+        <p id="chosen_operation"><u>Please select an action to perform.</u></p>
+        <!-- Cancel button: closes modal, returnValue is "cancel" -->
+        <button type="submit" formmethod="dialog" value="cancel">Cancel</button>
+        <!-- Close/Confirm button: closes modal, returnValue is "confirm" or selected value -->
+        <button type="submit" value="confirm">OK</button>
+    </form>
+</dialog>
+
+<dialog id="contact-ops-modal" style="min-width: 300px;">
+    <div id="email-ops-drafts" style="display: block;" >
+        <button onclick="prep_compose_for_contacts()">compose a message</button>
+        <!-- <button onclick="prep_instant_message_contacts()">instant message</button> -->
+        <button onclick="prep_edit_contacts()">edit contacts</button>
+        <button onclick="prep_contact_delete()">delete contacts</button>
+    </div>
+    <form method="dialog">
+        <p id="chosen_contact_operation"><u>Please select an action to perform.</u></p>
+        <!-- Cancel button: closes modal, returnValue is "cancel" -->
+        <button type="submit" formmethod="dialog" value="cancel">Cancel</button>
+        <!-- Close/Confirm button: closes modal, returnValue is "confirm" or selected value -->
+        <button type="submit" value="confirm">OK</button>
+    </form>
+</dialog>
+
 
 </body>
 </html>
@@ -745,13 +979,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     for ( let mtype in mail_managers ) {
         let a_manager = mail_managers[mtype]
-        a_manager.root = document.getElementById(`list-mail-${mtype}`)
-        a_manager.container_el = document.getElementById(`${mtype}-mail`)
+        a_manager.root = ('contacts' === mtype) ? document.getElementById(`list-contacts`) : document.getElementById(`list-mail-${mtype}`)
+        //
+        a_manager.container_el = ('contacts' === mtype) ? document.getElementById(`human-contacts`) : document.getElementById(`${mtype}-mail`)
         if ( a_manager.root ) {
             a_manager?.view?.mount(a_manager.root)
         }
     }
 
+    // TESTING
     let date = new Date()
     let start_id_for_testing = 1;
     let one_mail =  {   "id" : start_id_for_testing++, "sender" : "mail@b.com", 
@@ -780,6 +1016,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     mail_managers['drafts'].store.push(one_drafts)
 
 
+    let one_contact = {   "id" : start_id_for_testing++, "email" : "mail@b.com", 
+                    "name" : "Samkin Napkin",
+                    "date" : date.toLocaleString(),
+                    "timestamp" : date.getTime(),
+                    "text" : "some kid in L.A."
+                }
+
+    mail_managers['contacts'].store.push(one_contact)
+
+
     function store_of_mail_manager(mtype) {
         let mobj = mail_managers[mtype]
         if ( mobj ) {
@@ -791,6 +1037,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     window.store_of_mail_manager = store_of_mail_manager
+    
 
     /** --------------------------- */
     let g_current_mtype = "inbox"
@@ -812,6 +1059,18 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "text" : "got 5 message that might have some text" },
     ]
     //
+    let bunch_of_contacts = [
+        { "id" : 1, "email" : "mail@a.com", "name" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : "got 1 contact that might have some text"  },
+        { "id" : 1, "email" : "mail@s.com", "name" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : "got 2 contact that might have some text" },
+        { "id" : 1, "email" : "mail@d.com", "name" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : "got 3 contact that might have some text" },
+        { "id" : 1, "email" : "mail@f.com", "name" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : "got 4 contact that might have some text" },
+        { "id" : 1, "email" : "mail@g.com", "name" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : "got 5 contact that might have some text" },
+    ]
     //
     window.largest_id = start_id_for_testing
 
@@ -826,8 +1085,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "recipient" : "",
                         "text" : "edit this message"  }
     //
+    // testing
     window.add_mails = (mtype) => {
         if ( mtype === undefined ) mtype = g_current_mtype
+        if ( mtype === "contacts" ) {
+            add_contacts()
+            return
+        }
         let mail_store = store_of_mail_manager(mtype)
         let new_mail_bunch = structuredClone(bunch_of_mails)
         for ( let m of new_mail_bunch ) {
@@ -857,6 +1121,84 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
         sort_mail(mtype)
     }
+
+
+    // useful
+    window.add_contacts = () => {
+        let contact_store = store_of_mail_manager('contacts')
+        let new_contact_bunch = structuredClone(bunch_of_contacts)
+        for ( let c of new_contact_bunch ) {
+            c.id = get_next_id()
+            //
+            let d = new Date()
+            c.date = d.toLocaleString()
+            c.timestamp = d.getTime()
+        }
+        if ( contact_store ) {
+            if ( contact_store.length ) {
+                for ( let c of new_contact_bunch ) {
+                    contact_store.unshift(c)
+                }
+            } else {
+                contact_store.set(new_contact_bunch)
+            }
+        }
+        sort_mail('contacts')
+        return true
+    }
+
+
+
+    // useful (mail and contacts)
+    window.add_emails_to_list = (mtype,email_list) => {
+        if ( mtype === undefined ) return false
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) {
+            if ( mail_store.length ) {
+                for ( let m of email_list ) {
+                    mail_store.unshift(m)
+                }
+            } else {
+                mail_store.set(email_list)
+            }
+        }
+        sort_mail(mtype)
+        return true
+    }
+
+
+    window.delete_emails_from_list = (mtype,email_ids_list) => {
+        if ( mtype === undefined ) return false
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) {
+            mail_store.filter((email)=>{
+                let mid = email.id
+                if ( email_ids_list.indexOf(mid) >= 0 ) {
+                    return false
+                }
+                return true
+            })
+        }
+        return true
+    }
+
+    //
+    window.get_list_of_objects = (mtype,id_list) => {
+        if ( mtype === undefined ) return false
+        let mail_store = store_of_mail_manager(mtype)
+        if ( mail_store ) {
+            let obj_list = []
+            mail_store.forEach((obj) => {
+                if ( id_list.includes(obj.id) )  {
+                    obj_list.push(obj)
+                }
+            })
+            if ( !(obj_list.length) ) return false
+            return obj_list
+        }
+        return false
+    }
+
 
     window.add_empty_draft = (id) => {
         let mtype = "drafts"
@@ -935,6 +1277,25 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
+    window.contacts_ui = () => {
+        for ( let one_mtype in mail_managers ) {
+            let mobj = mail_managers[one_mtype]
+            if ( mobj.container_el ) {
+                mobj.container_el.style.display = "none"
+            }
+        }
+        let mtype = "contacts"
+        let mobj = mail_managers[mtype]
+        if ( mobj ) {
+            if ( mobj.container_el ) {
+                mobj.container_el.style.display = "block"
+                //
+                mtype_title.innerText = mtype
+                g_current_mtype = mtype
+            }            
+        }
+    }
+
 </script>
 <script>
     let squash_container = document.getElementById("squash_container")
@@ -988,6 +1349,59 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         return false
     }
 
+    // ---- ---- ---- ---- ---- ---- ---- ---- ----
+    //
+    // ['inbox','sent','spam','notify','trash'], ['drafts']
+    //
+    /*
+    // inbox_check_select
+    // sent_check_select
+    // spam_check_select
+    // notify_check_select
+    // drafts_check_select
+    // trash_check_select
+    */
+
+    function setup_modal_response(dialog_id) {
+        const dialog = document.getElementById(dialog_id);
+        dialog._acceptance_action = false
+        dialog.addEventListener('close', () => {
+            const action = dialog.returnValue;
+            switch (action) {
+                case "confirm" : {
+                    if ( dialog._acceptance_action ) {
+                        dialog._acceptance_action()
+                        dialog._acceptance_action = false
+                    }
+                    break;
+                }
+                case "cancel" : {
+                    // alert("no action taken")
+                    break
+                }
+            }
+        });
+    }
+
+    function setup_email_ops_dialog() {
+        setup_modal_response('email-ops-modal')
+    }
+
+    function setup_contacts_ops_dialog() {
+        setup_modal_response('contact-ops-modal')
+    }
+
+
+    function get_checked_messages(mtype) {
+        const checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+        const collectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+        if (collectedIds.length ) {
+            return collectedIds
+        } else {
+            alert("Operation apply to checked emails")
+            return false
+        }
+    }
     
 
     // EDIT WINDOW  ['drafts'] and create
@@ -1013,19 +1427,49 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         //
     }
 
-    function update_just_date(message) {
+    function update_contact_properties_view(cid) {
+        let contact = get_message_from_store('contacts',cid)
+        if ( contact ) {
+            g_current_edit_contact = contact
+            //
+            let m_prop_el = document.getElementById("view-contact-name")
+            if ( m_prop_el ) { m_prop_el.innerHTML = contact.name }
+            m_prop_el = document.getElementById("view-contact-email")
+            if ( m_prop_el ) { m_prop_el.innerHTML = contact.email }
+            //
+            m_prop_el = document.getElementById("edit-contact-name")
+            if ( m_prop_el ) { m_prop_el.value = contact.name }
+            m_prop_el = document.getElementById("edit-contact-email")
+            if ( m_prop_el ) { m_prop_el.value = contact.email }
+            //
+            m_prop_el = document.getElementById("view-contact-date")
+            if ( m_prop_el ) { m_prop_el.innerHTML = contact.date }
+            m_prop_el = document.getElementById("edit-contact-date")
+            if ( m_prop_el ) { m_prop_el.innerHTML = contact.date }
+        } else {
+            alert("no message")
+        }
+    }
+
+
+    function update_just_date(message,date_el_id) {
         let date = new Date()
         if ( message ) {  
             message.date = date.toLocaleString()
             message.timestamp = date.getTime()
         } else return
-        let m_prop_el = document.getElementById("edit-email-date")
+        let m_prop_el = document.getElementById(date_el_id)
         if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
-        sort_one_or_more('drafts')
+        if ( date_el_id === "edit-email-date" ) {
+            sort_one_or_more('drafts')
+        } else {
+            sort_one_or_more('contacts')
+        }
     }
 
 
     let g_current_edit_email = false
+    let g_current_edit_contact = false
     function setup_edit_response() {
         //
         let msg_editor = document.getElementById("email_message_contents_edit")
@@ -1033,7 +1477,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             msg_editor.addEventListener('input', (event) => {
                 if ( g_current_edit_email ) {
                     g_current_edit_email.text = event.target.innerHTML
-                    update_just_date(g_current_edit_email)
+                    update_just_date(g_current_edit_email,"edit-email-date")
                 }
             });
         }
@@ -1043,7 +1487,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             m_prop_el.addEventListener('change', (event) => {
                 if ( g_current_edit_email ) {
                     g_current_edit_email.sender = event.target.value
-                    update_just_date(g_current_edit_email)
+                    update_just_date(g_current_edit_email,"edit-email-date")
                 }
             });
         }
@@ -1053,7 +1497,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             m_prop_el.addEventListener('change', (event) => {
                 if ( g_current_edit_email ) {
                     g_current_edit_email.recipient = event.target.value
-                    update_just_date(g_current_edit_email)
+                    update_just_date(g_current_edit_email,"edit-email-date")
                 }
             });
         }
@@ -1063,7 +1507,42 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             m_prop_el.addEventListener('change', (event) => {
                 if ( g_current_edit_email ) {
                     g_current_edit_email.subject = event.target.value
-                    update_just_date(g_current_edit_email)
+                    update_just_date(g_current_edit_email,"edit-email-date")
+                }
+            });
+        }
+
+        // contacts 
+        //
+        let contact_editor = document.getElementById("contact_contents_edit")
+        if ( contact_editor ) {
+            contact_editor.addEventListener('input', (event) => {
+                if ( g_current_edit_contact ) {
+                    g_current_edit_contact.text = event.target.innerHTML
+                    update_just_date(g_current_edit_contact,"edit-contact-date")
+                    update_just_date(g_current_edit_contact,"view-contact-date")
+                }
+            });
+        }
+        //
+        let c_prop_el = document.getElementById("edit-contact-name")
+        if ( c_prop_el ) {
+            c_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_contact ) {
+                    g_current_edit_contact.name = event.target.value
+                    update_just_date(g_current_edit_contact,"edit-contact-date")
+                    update_just_date(g_current_edit_contact,"view-contact-date")
+                }
+            });
+        }
+        //
+        c_prop_el = document.getElementById("edit-contact-email")
+        if ( c_prop_el ) {
+            c_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_contact ) {
+                    g_current_edit_contact.email = event.target.value
+                    update_just_date(g_current_edit_contact,"edit-contact-date")
+                    update_just_date(g_current_edit_contact,"view-contact-date")
                 }
             });
         }
@@ -1071,6 +1550,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
  
     function mail_create() {
+        mail_switch_to('drafts')
         let sect_box = `#email_edit`
         let msg_view = document.getElementById("email_message_contents_edit")
         if ( msg_view ) {
@@ -1097,7 +1577,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         if ( msg_view ) {
             update_mail_properties_edit("drafts",msg_id)
             let clear_text = get_text_from_store("drafts",msg_id)
-            msg_view.innerHTML = `picked message id = ${msg_id} <br> ${clear_text}`
+            msg_view.innerHTML = clear_text
         }
         pinBox(sect_box)
     }
@@ -1205,14 +1685,309 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
-
-    function contacts_ui() {
-
+    /**
+     * 
+     */
+    function view_from_contacts(cid) {
+        let sect_box = `#contact_view`
+        let msg_view = document.getElementById("contact_contents_edit")
+        if ( msg_view ) {
+            update_contact_properties_view(cid)
+            let clear_text = get_text_from_store("contacts",cid)
+            msg_view.innerHTML = `picked contact id = ${cid} <br> ${clear_text}`
+        }
+        pinBox(sect_box)
     }
+
 
     function manage_prefs() {
 
     }
+    
+
+
+    /**
+     * Perform operations on a list.
+     * 
+     *  ['inbox','sent','drafts','spam','notify','trash']
+     * 
+     * Some lists may allow movement to another list.
+     * 
+     * Drafts can delete, move to trash, or be sent (sending moves to sent).
+     * Sent can move to archive, or copy to drafts.
+     * Spam can move to trash, to inbox, or notify
+     * Notify can move to trash, to inbox, or to spam
+     * Trash can permanently delete a message.
+     * 
+     * 
+     */
+
+    const email_op_message_el = document.getElementById("chosen_operation")
+    const contact_op_message_el = document.getElementById("chosen_contact_operation")
+    //
+    const email_op_dialog = document.getElementById('email-ops-modal');
+    const contact_op_dialog = document.getElementById('contact-ops-modal');
+
+    function reset_op_starter_message(category,msg) {
+        if ( category === "contacts" ) {
+            contact_op_message_el.innerHTML = msg
+        } else {
+            email_op_message_el.innerHTML = msg
+        }
+    }
+
+    function show_op_buttons(display_this_one) {
+        let mtypes = window._x_share_mail_classes
+        for ( let mtype of mtypes ) {
+            let mops = document.getElementById(`email-ops-${mtype}`)
+            if ( mops ) {
+                mops.style.display = "none"
+            }
+        }
+        let mops = document.getElementById(display_this_one)
+        if ( mops ) {
+            mops.style.display = "block"
+        }
+    }
+
+    let g_current_email_list_for_op = []
+    function do_op_modal(mtype) {
+        let m_list = get_checked_messages(mtype)
+        if ( m_list ) {
+            g_current_email_list_for_op = m_list.map(id => parseInt(id))
+            const dialog = document.getElementById('email-ops-modal');
+            if ( dialog ) {
+                reset_op_starter_message('email',"<u>Please select an action to perform.</u>")
+                show_op_buttons(`email-ops-${mtype}`)
+                dialog.showModal();
+            }
+        }
+    }
+
+
+    let g_current_contact_list_for_op = []
+    function do_contact_op_modal() {
+        let m_list = get_checked_messages('contacts')
+        if ( m_list ) {
+            g_current_contact_list_for_op = m_list.map(id => parseInt(id))
+            const dialog = contact_op_dialog;
+            if ( dialog ) {
+                reset_op_starter_message('contacts',"<u>Please select an action to perform.</u>")
+                dialog.showModal();
+            }
+        }
+    }
+
+
+    async function send_emails(object_list) {
+        return true
+    }
+
+    async function send_email_list(from) {
+        let id_list = g_current_email_list_for_op
+        let object_list = get_list_of_objects(from,id_list)
+        if ( object_list && object_list.length ) {
+            if ( await send_emails(object_list) ) {
+                add_objects_to_list('sent',object_list)
+                delete_objects_from_list(from,id_list)
+            }
+        }
+    }
+
+    function email_list_move_to(from,to) {
+        let id_list = g_current_email_list_for_op
+        let object_list = get_list_of_objects(from,id_list)
+        if ( object_list && object_list.length ) {
+            add_objects_to_list(to,object_list)
+            delete_objects_from_list(from,id_list)
+        }
+    }
+
+    function email_list_copy_to(from,to) {
+        let id_list = g_current_email_list_for_op
+        let object_list = get_list_of_objects(from,id_list)
+        if ( object_list && object_list.length ) {
+            add_objects_to_list(to,object_list)
+        }
+    }
+
+    function email_list_delete(from) {
+        let id_list = g_current_email_list_for_op
+        if ( id_list && id_list.length ) {
+            delete_objects_from_list(from,id_list)
+        }
+    }
+
+
+
+    async function add_objects_to_list(to,object_list) {
+        add_emails_to_list(to,object_list)
+        // server communication
+    }
+
+    async function delete_objects_from_list(from,id_list) {
+        delete_emails_from_list(from,id_list)
+        // server communication
+    }
+
+
+    function prep_send_email_list(from) {
+        if ( email_op_message_el ) {
+            email_op_message_el.innerText = "Send selected emails?"
+            email_op_dialog._acceptance_action = () => {
+                if ( confirm("This decision if final. Proceed?") ) {
+                    send_email_list(from)
+                }
+            }
+        }
+    }
+    function prep_email_list_move_to(from,to) {
+        if ( email_op_message_el ) {
+            email_op_message_el.innerText = `Move these emails from ${from} to ${to}?`
+            email_op_dialog._acceptance_action = () => {
+                email_list_move_to(from,to)
+            }
+        }
+    }
+    function prep_email_list_copy_to(from,to) {
+        if ( email_op_message_el ) {
+            email_op_message_el.innerText = `Clopy these emails from ${from} to ${to}?`
+            email_op_dialog._acceptance_action = () => {
+                email_list_copy_to(from,to)
+            }
+        }
+    }
+    function prep_email_list_delete(from) {
+        if ( email_op_message_el ) {
+            email_op_message_el.innerText = `Permanently delete these emails?`
+            email_op_dialog._acceptance_action = () => {
+                if ( confirm("This action cannot be undone. Proceed?") ) {
+                    email_list_delete(from)
+                }
+            }
+        }
+    }
+
+    setup_email_ops_dialog()
+
+    
+    // contact edting ops
+    const contact_edit_mode_select_el = document.getElementById("contact_edit_mode_select")
+    const contact_edit_mode_cancel = document.getElementById("contact_edit_mode_cancel")
+    const contact_launch_compose_el = document.getElementById("contact_launch_compose")
+    const contact_remove_el = document.getElementById("contact_remove")
+    const contact_properties_view = document.getElementById("contact-properties-view")
+    const contact_properties_edit = document.getElementById("contact-properties-edit")
+
+
+    function contact_edit_mode_toggle(set_val) {
+        let start_edit = false
+        let launch_save = false
+        if ( typeof set_val !== "boolean" ) {
+            let ev = set_val // should be an event
+            let domel = ev.target
+            let state = domel.innerText
+            if ( state === "edit" ) {
+                domel.innerText = "save"    // next use will launch save 
+                if ( contact_edit_mode_cancel ) {
+                    contact_edit_mode_cancel.style.display = "inline-block"
+                }
+                start_edit = true
+            } else {
+                domel.innerText = "edit"
+                if ( contact_edit_mode_cancel ) {
+                    contact_edit_mode_cancel.style.display = "none"
+                }
+                start_edit = false
+                launch_save = true // shut down editing and update the contact record
+            }
+        } else {
+            if ( contact_edit_mode_select_el && contact_edit_mode_cancel ) {
+                if ( set_val ) {
+                    contact_edit_mode_select_el.innerText = "save"
+                    contact_edit_mode_cancel.style.display = "inline-block"
+                    start_edit = true
+                } else {
+                    contact_edit_mode_select_el.innerText = "edit"
+                    contact_edit_mode_cancel.style.display = "none"
+                    start_edit = false
+                }
+            }
+        }
+        if ( contact_properties_view && contact_properties_edit ) {
+            if ( start_edit ) {
+                contact_properties_edit.style.display = "grid"
+                contact_properties_view.style.display = "none"
+            } else {
+                contact_properties_edit.style.display = "none"
+                contact_properties_view.style.display = "grid"
+            }
+        }
+        if ( launch_save ) {
+            // finalize a save that has been placed in the data
+            // clears the undo stack (this is a commit)
+        }
+    }
+    //
+    
+    //
+    function contact_edit_mode_reset(event) {
+        contact_edit_mode_toggle(false)
+    }
+
+
+    function contact_launch_compose() {
+        mail_create()
+        if ( g_current_edit_contact && g_current_edit_email ) {
+            g_current_edit_email.recipient = g_current_edit_contact.email
+            update_mail_properties_edit("drafts",g_current_edit_email.id)
+        }
+    }
+
+    function remove_on_contact() {
+        if ( g_current_edit_contact ) {
+            if ( confirm("This action cannot be undone. Proceed?") ) {
+                delete_emails_from_list('contacts',[g_current_edit_contact.id])
+                // server communication
+            }
+        }
+    }
+
+
+    function prep_compose_for_contacts() {
+        if ( contact_op_message_el ) {
+            contact_op_message_el.innerText = `Compose a message for selected contacts?`
+            contact_op_dialog._acceptance_action = () => {
+                mail_create()
+                if ( g_current_edit_contact && g_current_edit_email ) {
+                    g_current_edit_email.recipient = g_current_edit_contact.email
+                    update_mail_properties_edit("drafts",g_current_edit_email.id)
+                }
+            }
+        }
+    }
+
+    // This makes a work queue that will present to user one contact edit at a time.
+    //
+    function prep_edit_contacts() {
+
+    }
+
+    function prep_contact_delete() {
+        if ( contact_op_message_el ) {
+            contact_op_message_el.innerText = `Permanently delete these contacts?`
+            contact_op_dialog._acceptance_action = () => {
+                if ( confirm("This action cannot be undone. Proceed?") ) {
+                    g_current_email_list_for_op = g_current_contact_list_for_op
+                    email_list_delete('contacts')
+                }
+            }
+        }
+    }
+
+
+    setup_contacts_ops_dialog()
+
 
 </script>
 <script>

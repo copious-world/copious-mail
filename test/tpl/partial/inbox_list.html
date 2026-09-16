@@ -1,6 +1,6 @@
 
   <tr>
-    <td class="in-checkbox-cell"><input type="checkbox" name="inbox_check_select"/></td>
+    <td class="in-checkbox-cell"><input type="checkbox" class="inbox_check_select"  value="{{data.id}}"/></td>
     <td class="in-recipient-cell" onclick="view_from_inbox({{data.id}})">{{ data.sender }}</td>
     <td class="in-subject-cell" onclick="view_from_inbox({{data.id}})">{{ data.subject }}</td>
     <td class="in-date-cell" onclick="view_from_inbox({{data.id}})">{{ data.date }}</td>
