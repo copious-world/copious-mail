@@ -303,6 +303,29 @@
         width: 50%;
     }
 
+    .search-band {
+        padding:4px;
+        text-align: center;
+        background-color: rgba(255, 255, 225, 1);
+        border-bottom: solid 1px rgb(7, 7, 39);
+    }
+    .search-band > span {
+        font-weight: bolder;
+    }
+    .search-band > input {
+        font-weight: normal;
+        width: 20%;
+    }
+    .search-band > button {
+        font-weight: normal;
+        width: fit-content;
+        text-wrap: nowrap;
+        border:none;
+        border-bottom: 1px dotted rgba(102, 102, 95, 0.356);
+        background-color: transparent;
+        box-shadow: 2px 2px rgba(186, 186, 201, 0.31);
+    }
+
     h4 {
         padding-left: 8%;
         font-style: italic;
@@ -632,14 +655,8 @@
 
 <div class="follow-menu">
     <span id="mail-type-title">inbox</span>
-    testing...
-    <button onclick="add_mails()">add mails</button>
-    <button onclick="swap_two()">swap two mails</button>
-    <button onclick="delete_two()">delete two mails</button>
-    <button onclick="sort_mail()">sort mails</button>
-    <button onclick="reverse_mail()">reverse mails</button>
-    <button onclick="add_contacts()">add contacts</button>
 </div>
+
 
 <details id="squash_container" class="squash_m" >
     <summary>
@@ -675,6 +692,7 @@ oicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0
             <h4><button onclick="toggle_ul(event,'manage')">manage <span id="ardn-manage" style="display:inline-block">&#x25BC;</span><span id="arrt-manage" style="display:none">&#x25BA;</span></button></h4>
             <ul id="ul-manage">
                 <li><button onclick="contacts_ui()" >contacts</button></li>
+                <li><button onclick="contact_create()" >add_contact</button></li>
                 <li><button onclick="search_ui('contacts')" >search contacts</button></li>
                 <li><button onclick="search_ui('messages')" >search messages</button></li>
                 <li><button onclick="manage_prefs()" >preferences</button></li>
@@ -691,6 +709,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 */ -->
 
 </nav>
+
+<div class="search-band">
+        <span id="mail-search-title" >search</span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input id="search-filter" type="text" value="" />
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <button onclick="open_search_box()">detailed search</button>
+</div>
+
 
     <!-- MAIL DISPLAY -->
     <main id="mail-main" >
@@ -905,6 +932,18 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 </div>
 
 
+
+<div id="preferences" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'preferences')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+        update a user's preferences
+	</div>
+</div>
+
+
 <!--
 * Drafts can delete, move to trash, or be sent (sending moves to sent).
 * Sent can move to archive, or copy to drafts.
@@ -967,6 +1006,39 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     </form>
 </dialog>
 
+<dialog id="search-ops-modal" style="min-width: 300px;">
+    <div class="mail-properties" >
+        <div class="field-label">search:</div>
+        <div class="field-value"><input id="search-list-patterns" type="text" /></div>
+
+        <div id="mail_type_select_label" class="field-label" style="display: none;">mail type:</div>
+        <div id="mail_type_select" class="field-value" style="display: none;">
+            <select id="mail_type_selector" onchange="mail_switch_to_event(event)" >  
+                <option value="all-messages">all messages</option>
+                <option value="inbox">inbox</option>
+                <option value="sent">sent</option>
+                <option value="drafts">drafts</option>
+                <option value="notify">notify</option>
+                <option value="trash">trash</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        testing...
+        <button onclick="add_mails()">add mails</button>
+        <button onclick="swap_two()">swap two mails</button>
+        <button onclick="delete_two()">delete two mails</button>
+        <button onclick="sort_mail()">sort mails</button>
+        <button onclick="reverse_mail()">reverse mails</button>
+        <button onclick="add_contacts()">add contacts</button>
+    </div>
+    <form method="dialog">
+        <!-- Cancel button: closes modal, returnValue is "cancel" -->
+        <button type="submit" formmethod="dialog" value="cancel">Cancel</button>
+        <!-- Close/Confirm button: closes modal, returnValue is "confirm" or selected value -->
+        <button type="submit" value="confirm">search</button>
+    </form>
+</dialog>
 
 </body>
 </html>
@@ -1041,6 +1113,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     /** --------------------------- */
     let g_current_mtype = "inbox"
+    window._current_mtype = "inbox"
+    //
     let bunch_of_mails = [
         { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
@@ -1084,6 +1158,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     let mail_proto = { "id" : 1, "sender" : "richard@myhost.local", "subject" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "",
                         "text" : "edit this message"  }
+
+    let contact_proto = { "id" : 1, "email" : "", "name" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "text" : ""  }
+
     //
     // testing
     window.add_mails = (mtype) => {
@@ -1213,6 +1291,19 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         return false
     }
 
+    window.add_empty_contact = (id) => {
+        let mtype = "contacts"
+        let mail_store = store_of_mail_manager(mtype)
+        let new_contact = structuredClone(contact_proto)
+        new_contact.id = id
+        //
+        if ( mail_store ) {
+            mail_store.unshift(new_contact)
+            return new_contact
+        }
+        return false
+    }
+ 
 
     window.swap_two = (mtype) => {
         if ( mtype === undefined ) mtype = g_current_mtype
@@ -1273,7 +1364,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 //
                 mtype_title.innerText = mtype
                 g_current_mtype = mtype
+                window._current_mtype = mtype
             }            
+        }
+    }
+
+    window.mail_switch_to_event = (event) => {
+        let sel_el = event.target
+        if ( sel_el ) {
+            if ( sel_el.value === "all-messages") return
+            mail_switch_to(sel_el.value)
         }
     }
 
@@ -1292,8 +1392,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 //
                 mtype_title.innerText = mtype
                 g_current_mtype = mtype
+                window._current_mtype = g_current_mtype
             }            
         }
+    }
+
+    window.add_contacts_ui = () => {
+
     }
 
 </script>
@@ -1381,6 +1486,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 }
             }
         });
+        return dialog
     }
 
     function setup_email_ops_dialog() {
@@ -1389,6 +1495,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     function setup_contacts_ops_dialog() {
         setup_modal_response('contact-ops-modal')
+    }
+
+    function setup_search_ops_dialog() {
+        let search_d = setup_modal_response('search-ops-modal')
+        search_d._acceptance_action = () => {
+            // final search update -- otherwise the fields are reactive 
+        }
     }
 
 
@@ -1571,6 +1684,30 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         pinBox(sect_box)
     }
 
+    function contact_create() {
+        mail_switch_to('contacts')
+        let sect_box = `#contact_view`
+        let msg_view = document.getElementById("contact_contents_edit")
+        if ( msg_view ) {
+           let id = get_next_id()
+            let contact = add_empty_contact(id)
+            if ( contact ) {
+                let c_id = contact.id
+                contact.text = ""
+                let clear_text = contact.text
+                msg_view.innerHTML = `adding message id = ${c_id}
+                <br> ${clear_text}
+                <br> will be adding text here`
+                //
+                g_current_edit_contact = contact
+                update_contact_properties_view(c_id)
+                contact_edit_mode_toggle(true)
+            }
+        }
+        pinBox(sect_box)
+    }
+
+
     function edit_from_draft(msg_id) {
         let sect_box = `#email_edit`
         let msg_view = document.getElementById("email_message_contents_edit")
@@ -1700,10 +1837,42 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
+    /**
+     * 
+     */
     function manage_prefs() {
-
+        let sect_box = `#preferences`
+        pinBox(sect_box)
     }
     
+
+
+    function search_ui(mtype) {
+        //
+        let type_select = document.getElementById("mail_type_select")
+        let ts_label = document.getElementById("mail_type_select_label")
+        let ts_selector = document.getElementById("mail_type_selector")
+
+        if ( mtype === 'contacts' ) {
+            mail_switch_to('contacts')
+            if ( type_select && ts_label ) {
+                type_select.style.display = "none"
+                ts_label.style.display = "none"
+            }
+        } else if ( mtype === 'messages' ) {
+            let mtype = window._current_mtype
+            if ( type_select  && ts_label ) {
+                type_select.style.display = "inline"
+                ts_label.style.display = "inline"
+                if ( mtype && mtype.length ) {
+                    ts_selector.value = mtype
+                }
+            }
+            mail_switch_to(mtype)
+        }
+        //
+        open_search_box()
+    }
 
 
     /**
@@ -1727,6 +1896,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     //
     const email_op_dialog = document.getElementById('email-ops-modal');
     const contact_op_dialog = document.getElementById('contact-ops-modal');
+    const search_op_dialog = document.getElementById('search-ops-modal');
 
     function reset_op_starter_message(category,msg) {
         if ( category === "contacts" ) {
@@ -1775,6 +1945,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 reset_op_starter_message('contacts',"<u>Please select an action to perform.</u>")
                 dialog.showModal();
             }
+        }
+    }
+
+
+    function open_search_box() {
+        const dialog = search_op_dialog
+        if ( dialog ) {
+            dialog.showModal();
         }
     }
 
@@ -1985,8 +2163,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
-
     setup_contacts_ops_dialog()
+
+
+
+
+
+    setup_search_ops_dialog()
 
 
 </script>
