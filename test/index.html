@@ -670,6 +670,31 @@
     .ul-attachments-list > li > button:hover {
         border-bottom: 1px solid navy;
     }
+
+    .edit-attachments-cell-2 > button {
+        cursor: pointer;
+        border: none;
+        border-bottom: 1px dotted rgba(246, 255, 116, 1);
+        font-weight: bold;
+    }
+
+    .edit-attachments-cell-2 > button:hover {
+        color: rgba(87, 26, 26, 1);
+        background-color: rgb(251, 255, 242);
+    }
+
+    .edit-attachments-cell-3 > button {
+        cursor: pointer;
+        border: none;
+        border-bottom: 1px dotted rgba(255, 230, 116, 1);
+        font-weight: bold;
+    }
+
+    .edit-attachments-cell-3 > button:hover {
+        color: rgba(194, 0, 0, 1);
+        background-color: rgba(254, 255, 191, 1);
+    }
+
 </style>
 
 <script type="module">
@@ -972,9 +997,9 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         <div class="attachments-controls">
             <button onclick="toggle_ul(event,'attachments')">attachments <span id="ardn-attachments" style="display:none">&#x25BC;</span><span id="arrt-attachments" style="display:inline-block">&#x25BA;</span></button>
             <ul id="ul-attachments" class="ul-attachments-list" style="display:none" >
-                <li><button id="attach-128" onclick="show_attachment(128)">first attachment</button>
-                <li><button id="attach-129" onclick="show_attachment(129)">second attachment</button>
-                <li><button id="attach-130" onclick="show_attachment(130)">third attachment</button>
+                <li><button id="attach-128" onclick="show_attachment(128)">first attachment</button></li>
+                <li><button id="attach-129" onclick="show_attachment(129)">second attachment</button></li>
+                <li><button id="attach-130" onclick="show_attachment(130)">third attachment</button></li>
             </ul>
         </div>
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
@@ -1236,6 +1261,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 </body>
 </html>
+<script>
+    class Attachment {
+        constructor(id,title,data) {
+            this.id = id
+            this.title = title
+            this.data = data
+        }
+    }
+</script>
 <script type="module">
 
     const mail_managers = window._x_share_mail_managers
@@ -1252,6 +1286,26 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             a_manager?.view?.mount(a_manager.root)
         }
     }
+
+    // attachments
+
+    const view_ul_attachments = document.getElementById("ul-attachments")
+    const edit_attachments_el = document.getElementById("table-edit-attachments")
+
+    const attachment_managers = window._x_share_attachment_managers
+    const attach_types = window._x_share_attachment_classes
+    
+    // ['view','edit']
+    for ( let atype in attachment_managers ) {
+        let a_manager = attachment_managers[atype]
+        a_manager.root = (atype === 'view') ? view_ul_attachments : edit_attachments_el
+        //
+        if ( a_manager.root ) {
+            a_manager?.view?.mount(a_manager.root)
+        }
+    }
+
+
 
     // TESTING
     let date = new Date()
@@ -1304,6 +1358,9 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     mail_managers['contacts'].store.push(one_contact)
 
 
+    /**
+     * 
+     */
     function store_of_mail_manager(mtype) {
         let mobj = mail_managers[mtype]
         if ( mobj ) {
@@ -1315,6 +1372,20 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     window.store_of_mail_manager = store_of_mail_manager
+
+
+
+    function store_of_attachment_manager(atype) {
+        let aobj = attachment_managers[atype]
+        if ( aobj ) {
+            if ( aobj.store ){
+                return aobj.store
+            }            
+        }
+        return false
+    }
+
+    window.store_of_attachment_manager = store_of_attachment_manager
     
 
     /** --------------------------- */
@@ -1404,6 +1475,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 m.sender = recip
             }
         }
+
+        let j = 0
+        for ( let m of new_mail_bunch ) {
+            let a1 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of the attachments")
+            m.attachments.push(a1)
+            let a2 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of more attachments")
+            m.attachments.push(a2)
+        }
+
 
         if ( mail_store ) {
             if ( mail_store.length ) {
@@ -1621,6 +1701,50 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             }            
         }
     }
+
+    // attachments -------------------
+
+    // useful (mail and contacts)
+    window.add_atts_to_list = (atype,att_list) => {
+        if ( atype === undefined ) return false
+        let atts_store = store_of_attachment_manager(atype)
+        if ( atts_store ) {
+            if ( atts_store.length ) {
+                for ( let a of att_list ) {
+                    atts_store.unshift(a)
+                }
+            } else {
+                atts_store.set(att_list)
+            }
+        }
+        // sort_attachments(atype)
+        return true
+    }
+
+
+    window.delete_atts_from_list = (atype,atts_ids_list) => {
+        if ( atype === undefined ) return false
+        let atts_store = store_of_attachment_manager(atype)
+        if ( atts_store ) {
+            atts_store.filter((attachment)=>{
+                let aid = attachment.id
+                if ( atts_ids_list.indexOf(aid) >= 0 ) {
+                    return false
+                }
+                return true
+            })
+        }
+        return true
+    }
+
+    window.clear_atts_list = (atype) => {
+        if ( atype === undefined ) return false
+        let atts_store = store_of_attachment_manager(atype)
+        if ( atts_store ) {
+            atts_store.set([])
+        }
+    }
+
 
 </script>
 <script>
@@ -1855,6 +1979,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
             //
             store_current_email_undo_stack()
+            if ( message.attachments ) {
+                clear_atts_list('edit')
+                add_atts_to_list('edit',message.attachments)
+            }
         } else {
             alert("no message")
         }
@@ -2174,6 +2302,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             if ( m_prop_el ) { m_prop_el.innerHTML = message.subject }
             m_prop_el = document.getElementById("view-email-date")
             if ( m_prop_el ) { m_prop_el.innerHTML = message.date }
+            if ( message.attachments ) {
+                clear_atts_list('view')
+                add_atts_to_list('view',message.attachments)
+            }
         }
         //
     }
@@ -2761,15 +2893,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     setup_search_ops_dialog()
 
 
-    // attachments
-
-    const view_ul_attachments = document.getElementById("ul-attachments")
-    const edit_attachments_el = document.getElementById("table-edit-attachments")
-
-
-    const attachment_managers = window._x_share_attachment_managers
-    const attach_types = window._x_share_attachment_classes
-    
 
 
     function show_attachment(a_id) {
@@ -2777,7 +2900,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     function remove_attachment(a_id) {
-        alert(`removing ${a_id}`)
+        delete_atts_from_list('edit',[a_id])
     }
 
 </script>
