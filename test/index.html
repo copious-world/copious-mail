@@ -593,6 +593,7 @@
         font-style: italic;
         color: rgb(50, 88, 40);
         user-select: none;
+        cursor: arrow;
     }
 
     .attachments-controls > button {
@@ -606,6 +607,12 @@
     .attachments-controls a:hover {
         color:rgb(168, 53, 0);
         font-weight: 600;
+    }
+
+    .file-dropper-handler.drag-over {
+        cursor: grab;
+        border: solid 1px rgb(255, 94, 0);
+        background-color: rgb(248, 255, 230);
     }
 
 
@@ -1061,11 +1068,11 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <div class="field-label">Last edit:</div>
             <div id="edit-email-date" class="field-value">September 14, 2026, 12:51 PM</div>
         </div>
-        <div id="edit-email-attachments" class="attachments-controls" dropzone="true">
+        <div id="edit-email-attachments" class="attachments-controls file-dropper-handler" dropzone="true" >
             <label for="fileInput" class="custom-button">
             add &#128206;
             </label>
-            <input type="file" id="fileInput" style="display: none;" />
+            <input type="file" id="fileInput" style="display: none;" onchange="onFileSelected(event)" />
 
             <button onclick="toggle_table(event,'edit-attachments')">attachments <span id="ardn-edit-attachments" style="display:none">&#x25BC;</span><span id="arrt-edit-attachments" style="display:inline-block">&#x25BA;</span></button>
             <table id="table-edit-attachments" style="display:none" >
@@ -1081,8 +1088,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 		</div>
 	</div>
 </div>
-
-
 
 
 <div id="contact_view" class="right_fade_able" style="z-index:124" >
@@ -2888,12 +2893,30 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
+    // initializers ----
     setup_contacts_ops_dialog()
-
     setup_search_ops_dialog()
 
+    // attachments
+    // -------------------------------------------------
 
+    async function onFileSelected(e) {
+        if ( e.target.files.length ) {
+            attachment_drop_file_handler(e.target.files)
+        }
+    }
 
+    async function onFilesSelected(e) {
+        if ( e.target.files && e.target.files[0] ) {
+            let file_proper = e.target.files[0]            //
+            //let upload_size = file_proper.size
+            let [fname,blob] = await drop_one(e.target.files)
+            file_proper.blob = blob
+            // store as attachment
+            let att = new Attachment(get_next_id(),fname,file_proper)
+            add_atts_to_list('edit',[att])
+        }
+    }
 
     function show_attachment(a_id) {
         alert(`showing ${a_id}`)
@@ -2902,6 +2925,25 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     function remove_attachment(a_id) {
         delete_atts_from_list('edit',[a_id])
     }
+
+
+
+    async function attachment_drop_file_handler(files) {
+        if ( files && files.length ) {
+            let files_blobs_tripples = await drop(files)
+
+            files_blobs_tripples.forEach(async file_tripple => {
+                let [fname,file_proper,blob] = file_tripple
+                file_proper.blob = blob
+                // store as attachment
+                let att = new Attachment(get_next_id(),fname,file_proper)
+                add_atts_to_list('edit',[att])
+            });
+        }
+    }
+
+
+    window._x_app_handle_files = attachment_drop_file_handler
 
 </script>
 <script>
@@ -3294,5 +3336,68 @@ document.addEventListener('mousemove',(e) => {
         need_ref_obj.style.top = `${(refrect.height + aboverect.height + 22)}px`
     }
 })
+
+</script>
+<script>
+
+    // general client stuff...
+    // 
+    function drop_one(file) {
+        if ( !file ) {
+            throw new Error("drop-one: no file passed")
+        }
+        let p = new Promise((resolve,reject) => {
+            var reader = new FileReader();
+            let fname = file.name
+            reader.onload = (e) => {
+                let blob64 = e.target.result
+                resolve([fname,file,blob64])
+            };
+            reader.readAsDataURL(file)
+        })
+        return p
+    }
+
+    // 
+    function drop(files) {
+        //
+        let promises = [];
+        //
+        [...files].forEach(async file_proper => {
+            promises.push(drop_one(file_proper))
+        });
+        //
+    	return Promise.all(promises)
+    }
+
+
+</script>
+<script>
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+const dropZone = document.getElementById('edit-email-attachments');
+
+// 1. Prevent default behaviors for all drag/drop events
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+// 3. Handle the drop event itself
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    // Access the dropped files via DataTransfer
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    if (files.length > 0) {
+        window._x_app_handle_files(files);
+    }
+}
+
 
 </script>
