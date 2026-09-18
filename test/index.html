@@ -689,7 +689,10 @@
     import notify_template from "./tpl/partial/notify_list.js";
     import trash_template from "./tpl/partial/trash_list.js";
     import contacts_template from "./tpl/partial/contact_list.js";
+    import attachment_view_template from "./tpl/partial/attachment_view.js"
+    import attachment_edit_template from "./tpl/partial/attachment_edit.js"
 
+    
     let mail_imports = {
         "inbox" : inbox_template,
         'sent' : sent_template,
@@ -699,6 +702,12 @@
         'trash' : trash_template,
         'contacts' : contacts_template
     }
+
+    let attachment_imports = {
+        'view' : attachment_view_template,
+        'edit' : attachment_edit_template
+    }
+
     //
     let mail_classes = ['inbox','sent','drafts','spam','notify','trash', 'contacts']
     let mail_management = {}
@@ -715,8 +724,26 @@
         }
     }
 
+    let attachment_classes = ['view','edit']
+    let attachment_management = {}
+
+    for ( let mtype of attachment_classes ) {
+        let store = new Mikado.Array();
+        let attachment_template = attachment_imports[mtype]
+        let view = new Mikado(attachment_template, { observe: store });
+        attachment_management[mtype] = {
+            "view" : view,
+            "store" : store,
+            "root" : null,
+            "container_el" : null
+        }
+    }
+
     window._x_share_mail_managers = mail_management
     window._x_share_mail_classes = ['inbox','sent','drafts','spam','notify','trash', 'contacts']
+
+    window._x_share_attachment_managers = attachment_management
+    window._x_share_attachment_classes = ['view','edit']
 
 </script>
 </head>
@@ -1236,6 +1263,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "every message might have some text",
+                        "attachments" : [],
                         "_count_edits" : 1, "_saved_updates" : [] 
                     }
     mail_managers['inbox'].store.push(one_mail)
@@ -1247,6 +1275,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "sent message that might have some text",
+                        "attachments" : [],
                         "_count_edits" : 1, "_saved_updates" : []
                     }
     mail_managers['sent'].store.push(one_sent)
@@ -1258,6 +1287,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "wrote message that might have some text",
+                        "attachments" : [],
                         "_count_edits" : 1, "_saved_updates" : [] 
                      }
     mail_managers['drafts'].store.push(one_drafts)
@@ -1295,22 +1325,27 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
+                        "attachments" : [],
                         "text" : "got 1 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
+                        "attachments" : [],
                         "text" : "got 2 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
+                        "attachments" : [],
                         "text" : "got 3 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
+                        "attachments" : [],
                         "text" : "got 4 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
+                        "attachments" : [],
                         "text" : "got 5 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
     ]
     //
@@ -2728,10 +2763,22 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     // attachments
 
+    const view_ul_attachments = document.getElementById("ul-attachments")
+    const edit_attachments_el = document.getElementById("table-edit-attachments")
+
+
+    const attachment_managers = window._x_share_attachment_managers
+    const attach_types = window._x_share_attachment_classes
+    
+
+
     function show_attachment(a_id) {
         alert(`showing ${a_id}`)
     }
 
+    function remove_attachment(a_id) {
+        alert(`removing ${a_id}`)
+    }
 
 </script>
 <script>
