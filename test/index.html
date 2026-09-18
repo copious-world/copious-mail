@@ -584,6 +584,16 @@
         max-width: 600px; */
     }
 
+    .select-all-ops-properties-on-ops {
+        display: grid;
+        grid-template-columns: 50% 1fr;
+        gap: 12px 16px;
+        align-items: center;
+        padding: 2px;
+        border-top:solid 1px rgb(9, 37, 9);
+        border-bottom:solid 1px rgb(9, 37, 9);
+        background: #f9f9f9;
+    }
 
     .attachments-controls {
         background-color: rgb(243, 239, 219);
@@ -790,10 +800,7 @@
 <details id="squash_container" class="squash_m" >
     <summary>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
-        <path class="her
-<!-- 
-/*
-oicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+        <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
     </svg>
     </summary>
     <!-- MAIL MENU CONTROL -->
@@ -1182,6 +1189,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         <button onclick="prep_email_list_delete('trash')">delete</button>
         <button onclick="prep_email_list_move_to('trash','inbox')">move to inbox</button>
         <button onclick="prep_email_list_move_to('trash','notfify')">move to notify</button>
+    </div>
+    <div class="select-all-ops-properties-on-ops">
+        <div class="field-label">Select All:</div>
+        <div class="field-value"><input id="select-all-op-on-ops" type="checkbox" onchange="save_current_sel_pattern(event);toggle_current_select_all(event)" value="inbox" /></div>
     </div>
     <form method="dialog">
         <p id="chosen_operation"><u>Please select an action to perform.</u></p>
@@ -1878,8 +1889,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 g_select_all_response_promise = { resolver : false, rejector : false }
             }
         }
-
     }
+
 
     function setup_select_all_ops_dialog() {
         setup_modal_response('select-all-ops-modal')
@@ -1931,7 +1942,33 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
+    // select_all_op_dialog_on_ops
+
     // SELECT ALL
+    let g_save_current_checkbox_pattern = false
+    function save_current_sel_pattern(ev) {
+        //
+        if ( g_save_current_checkbox_pattern === false ) {
+            const mtype = window._current_mtype
+            const checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+            if ( checkedBoxes.length ) {
+                g_save_current_checkbox_pattern = checkedBoxes
+            } else {
+                g_save_current_checkbox_pattern = false
+            }
+        }
+        //
+    }
+
+    function restore_sel_pattern(ev) {
+        if ( g_save_current_checkbox_pattern !== false ) {
+            for ( let cb of g_save_current_checkbox_pattern ) {
+                cb.checked = true
+            }
+        }
+        g_save_current_checkbox_pattern = false
+    }
+
     function toggle_current_select_all(ev) {
         let check_master = ev.target
         let mtype = check_master.value
@@ -1939,10 +1976,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         if ( checked ) {
             set_check_boxes(mtype)
         } else {
-            clear_check_boxes(mtype)
+            if ( g_save_current_checkbox_pattern !== false ) {
+                clear_check_boxes(mtype)
+                restore_sel_pattern(mtype)
+            } else {
+                clear_check_boxes(mtype)
+            }
         }
+        collect_emails_list_for_op(mtype)
     }
-
 
     async function get_checked_messages(mtype) {
         const check_master = document.getElementById("select-all-op")
@@ -2524,6 +2566,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     const contact_op_dialog = document.getElementById('contact-ops-modal');
     const search_op_dialog = document.getElementById('search-ops-modal');
     const select_all_op_dialog = document.getElementById('select-all-ops-modal');
+    //
+    const select_all_op_dialog_on_ops = document.getElementById('select-all-ops-on-ops');
+
+
 
     function reset_op_starter_message(category,msg) {
         if ( category === "contacts" ) {
@@ -2548,6 +2594,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     let g_current_email_list_for_op = []
+
+    async function collect_emails_list_for_op(mtype) {
+        let m_list = await get_checked_messages(mtype)
+        if ( m_list) {
+            g_current_email_list_for_op = m_list.map(id => parseInt(id))
+        }
+    }
+
     async function do_op_modal(mtype,mail_id_list_set = false) {
         let m_list = mail_id_list_set ? false : await get_checked_messages(mtype)
         if ( m_list || mail_id_list_set ) {
