@@ -342,6 +342,8 @@
         text-wrap: nowrap;
     }
 
+
+
     /** list styling **/
 
 
@@ -526,6 +528,7 @@
     .trash-subject-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
     .trash-date-cell { background-color: white; cursor: pointer; width: 33%; padding-left: 4%; }
 
+
     .email-trash th > button {
         color: navy;
     }
@@ -545,9 +548,19 @@
         align-items: center;
         padding: 16px;
         background: #f9f9f9;
-        border-radius: 8px;
-        max-width: 600px;
+        /* border-radius: 8px; */
+        /* max-width: 600px; */
     }
+
+    .edit-mail-properties {
+        display: grid;
+        grid-template-columns: 20% 1fr;
+        gap: 12px 16px;
+        align-items: center;
+        padding: 16px;
+        background: #f9f9f9;
+    }
+    
 
     .contact-properties {
         display: grid;
@@ -556,8 +569,8 @@
         align-items: center;
         padding: 16px;
         background: #f9f9f9;
-        border-radius: 8px;
-        max-width: 600px;
+        /* border-radius: 8px; */
+        /* max-width: 600px; */
     }
 
     .select-all-ops-properties {
@@ -567,8 +580,40 @@
         align-items: center;
         padding: 16px;
         background: #f9f9f9;
-        border-radius: 8px;
-        max-width: 600px;
+        /* border-radius: 8px;
+        max-width: 600px; */
+    }
+
+
+    .attachments-controls {
+        background-color: rgb(243, 239, 219);
+        border-bottom: 1px solid rgb(9, 54, 9);
+        border-top: 1px solid rgb(9, 54, 9);
+        padding:4px;
+        font-style: italic;
+        color: rgb(50, 88, 40);
+        user-select: none;
+    }
+
+    .attachments-controls > button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font: inherit;
+        text-wrap: nowrap;
+    }
+
+    .attachments-controls a:hover {
+        color:rgb(168, 53, 0);
+        font-weight: 600;
+    }
+
+
+    .ops-button-containers {
+        background: #e9ebf0ff;
+        width: 100%;
+        border-bottom: 1px solid black;
+        margin-bottom: 8px;
     }
 
     .field-label {
@@ -611,6 +656,20 @@
         background-color: #f7fddcff;
     }
 
+    /* attachments */
+
+    .ul-attachments-list > li {
+        border-bottom: 1px solid rgba(228, 227, 219, 0.445);
+    }
+
+    .ul-attachments-list > li > button {
+        border: none;
+        border-bottom: 1px solid transparent;
+        font-weight: bold;
+    }
+    .ul-attachments-list > li > button:hover {
+        border-bottom: 1px solid navy;
+    }
 </style>
 
 <script type="module">
@@ -864,21 +923,32 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
-        <div>
+        <div class="ops-button-containers">
             <button id="mail_view_move" onclick="single_mail_ops(event);">ops</button>
         </div>
         <div class="mail-properties">
             <div class="field-label">From:</div>
             <div id="view-email-sender" class="field-value">sender@example.com</div>
-            
+
             <div class="field-label">To:</div>
             <div id="view-email-recipient" class="field-value">recipient@example.com</div>
-            
+
+            <div class="field-label">cc:</div>
+            <div id="view-email-cc" class="field-value"></div>
+
             <div class="field-label">Subject:</div>
             <div id="view-email-subject" class="field-value">Project Update &amp; Next Steps</div>
-            
+
             <div class="field-label">Date:</div>
             <div id="view-email-date" class="field-value">September 14, 2026, 12:51 PM</div>
+        </div>
+        <div class="attachments-controls">
+            <button onclick="toggle_ul(event,'attachments')">attachments <span id="ardn-attachments" style="display:none">&#x25BC;</span><span id="arrt-attachments" style="display:inline-block">&#x25BA;</span></button>
+            <ul id="ul-attachments" class="ul-attachments-list" style="display:none" >
+                <li><button id="attach-128" onclick="show_attachment(128)">first attachment</button>
+                <li><button id="attach-129" onclick="show_attachment(129)">second attachment</button>
+                <li><button id="attach-130" onclick="show_attachment(130)">third attachment</button>
+            </ul>
         </div>
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
             <div id="email_message_contents" >
@@ -889,13 +959,30 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 </div>
 
 
+<!-- Style the label to look exactly like a button using CSS -->
+<style>
+  .custom-button {
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: sans-serif;
+    border:solid 1px transparent;
+  }
+  .custom-button:hover {
+    color: rgb(94, 5, 5);
+    background-color: #e9fff8ff;
+    border:dotted 1px rgb(255, 169, 57);
+  }
+</style>
+
 <div id="email_edit" class="right_fade_able" style="z-index:124" >
 	<div class="togglebar" >
 		<span class="closer_x" onmousedown="closefader(event,'email_edit');mail_edit_mode_reset(event);">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
-        <div>
+        <div  class="ops-button-containers">
             <button id="mail_edit_mode_send" onclick="do_send_mail(event);closefader(event,'email_edit');">send</button>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <button id="mail_edit_mode_save" onclick="edit_mail_save(event);" >save</button>
@@ -903,20 +990,38 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <button id="mail_remove" onclick="single_mail_ops(event);">ops</button>
         </div>
-        <div class="mail-properties">
+        <div class="edit-mail-properties">
             <div class="field-label">From:</div>
             <div class="field-value"><input id="edit-email-sender" type="email" /></div>
             
             <div class="field-label">To:</div>
             <div class="field-value"><input id="edit-email-recipient" type="email" /></div>
-            
+
+            <div class="field-label">cc:</div>
+            <div id="view-email-cc" class="field-value"><input id="edit-email-cc" type="email" /></div>
+
+            <div class="field-label">bcc:</div>
+            <div id="view-email-bcc" class="field-value"><input id="edit-email-bcc" type="email" /></div>
+
             <div class="field-label">Subject:</div>
             <div class="field-value"></label><input id="edit-email-subject" type="text" /></div>
 
             <div class="field-label">Last edit:</div>
             <div id="edit-email-date" class="field-value">September 14, 2026, 12:51 PM</div>
         </div>
+        <div id="edit-email-attachments" class="attachments-controls" dropzone="true">
+            <label for="fileInput" class="custom-button">
+            add &#128206;
+            </label>
+            <input type="file" id="fileInput" style="display: none;" />
 
+            <button onclick="toggle_table(event,'edit-attachments')">attachments <span id="ardn-edit-attachments" style="display:none">&#x25BC;</span><span id="arrt-edit-attachments" style="display:inline-block">&#x25BA;</span></button>
+            <table id="table-edit-attachments" style="display:none" >
+                <tr><td class="edit-attachments-cell-1">first attachment</td> <td class="edit-attachments-cell-2">view</td><td class="edit-attachments-cell-3">delete</td></tr>
+                <tr><td class="edit-attachments-cell-1">second attachment</td> <td class="edit-attachments-cell-2">view</td><td class="edit-attachments-cell-3">delete</td></tr>
+                <tr><td class="edit-attachments-cell-1">third attachment</td> <td class="edit-attachments-cell-2">view</td><td class="edit-attachments-cell-3">delete</td></tr>
+            </table>
+        </div>
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
             <div class="email-editor-body" id="email_message_contents_edit" contenteditable="true" >
                 This is the email to view
@@ -926,13 +1031,15 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 </div>
 
 
+
+
 <div id="contact_view" class="right_fade_able" style="z-index:124" >
 	<div class="togglebar" >
 		<span class="closer_x" onmousedown="closefader(event,'contact_view');contact_edit_mode_reset(event)">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
-        <div>
+        <div class="ops-button-containers" >
             <button id="contact_edit_mode_select" onclick="contact_edit_mode_toggle(event)">edit</button>
             <button id="contact_edit_mode_cancel" onclick="contact_edit_mode_reset(event)"  style="display: none;">cancel</button>
             <button id="contact_launch_compose" onclick="contact_launch_compose(event)">compose message</button>
@@ -997,6 +1104,9 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         <button onclick="prep_email_list_copy_to('sent','drafts')">copy to drafts</button>
     </div>
     <div id="email-ops-inbox" style="display: none;" >
+        <button onclick="prep_email_list_reply_to('inbox')">reply</button>
+        <button onclick="prep_email_list_reply_all('inbox')">reply all</button>
+        &nbsp;|&nbsp;
         <button onclick="prep_email_list_move_to('inbox','trash')">move to trash</button>
         <button onclick="prep_email_list_move_to('inbox','spam')">move to spam</button>
         <button onclick="prep_email_list_move_to('inbox','notfify')">move to notify</button>
@@ -1122,29 +1232,33 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     let one_mail =  {   "id" : start_id_for_testing++, "sender" : "mail@b.com", 
                         "subject" : "this is a test",
                         "recipient" : "richard@myhost.local",
+                        "cc" : "",
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "every message might have some text",
-                        "_count_edits" : 0, "_saved_updates" : [] 
+                        "_count_edits" : 1, "_saved_updates" : [] 
                     }
     mail_managers['inbox'].store.push(one_mail)
 
-    let one_sent =  { "id" : start_id_for_testing++, "recipient" : "mail@b.com", "subject" : "this is a test",
+    let one_sent =  { "id" : start_id_for_testing++,
+                        "recipient" : "mail@b.com", "subject" : "this is a test",
+                        "cc" : "",
                         "sender" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "sent message that might have some text",
-                        "_count_edits" : 0, "_saved_updates" : []
+                        "_count_edits" : 1, "_saved_updates" : []
                     }
     mail_managers['sent'].store.push(one_sent)
 
 
     let one_drafts =  { "id" : start_id_for_testing++, "recipient" : "mail@b.com", "subject" : "this is a test",
+                        "cc" : "",
                         "sender" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
                         "text" : "wrote message that might have some text",
-                        "_count_edits" : 0, "_saved_updates" : [] 
+                        "_count_edits" : 1, "_saved_updates" : [] 
                      }
     mail_managers['drafts'].store.push(one_drafts)
 
@@ -1180,19 +1294,24 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     let bunch_of_mails = [
         { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
-                        "text" : "got 1 message that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
+                        "cc" : "",
+                        "text" : "got 1 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
-                        "text" : "got 2 message that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
+                        "cc" : "",
+                        "text" : "got 2 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
-                        "text" : "got 3 message that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
+                        "cc" : "",
+                        "text" : "got 3 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
-                        "text" : "got 4 message that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
+                        "cc" : "",
+                        "text" : "got 4 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "richard@myhost.local",
-                        "text" : "got 5 message that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
+                        "cc" : "",
+                        "text" : "got 5 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
     ]
     //
     let bunch_of_contacts = [
@@ -1220,6 +1339,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     //
     let mail_proto = { "id" : 1, "sender" : "richard@myhost.local", "subject" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "recipient" : "",
+                        "cc" : "", "bcc" : "",
                         "text" : "edit this message", "_count_edits" : 0, "_saved_updates" : []  }
 
     let contact_proto = { "id" : 1, "email" : "", "name" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
@@ -1690,6 +1810,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             if ( m_prop_el ) { m_prop_el.value = message.sender }
             m_prop_el = document.getElementById("edit-email-recipient")
             if ( m_prop_el ) { m_prop_el.value = message.recipient }
+            //
+            m_prop_el = document.getElementById("edit-email-cc")
+            if ( m_prop_el ) { m_prop_el.value = message.cc }
+            //
             m_prop_el = document.getElementById("edit-email-subject")
             if ( m_prop_el ) { m_prop_el.value = message.subject }
             m_prop_el = document.getElementById("edit-email-date")
@@ -1708,12 +1832,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             let id = email.id
             let sender = email.sender
             let recipient = email.recipient
+            let cc = email.cc
             let subject = email.subject
             let text = email.text
             let date = email.date
             let timestamp = email.timestamp
             email.dirty = false
-            return { id, sender, recipient, subject, text, date, timestamp }
+            return { id, sender, recipient, cc, subject, text, date, timestamp }
         }
     }
 
@@ -1723,6 +1848,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             email.id = old_values.id
             email.sender = old_values.sender
             email.recipient = old_values.recipient
+            email.cc = old_values.cc
             email.subject = old_values.subject
             email.text = old_values.text
             email.date = old_values.date
@@ -1736,6 +1862,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             if ( save_email.id !== stored_email.id ) return true
             if ( save_email.sender !== stored_email.sender ) return true
             if ( save_email.recipient !== stored_email.recipient ) return true
+            if ( save_email.cc !== stored_email.cc ) return true
             if ( save_email.subject !== stored_email.subject ) return true
             if ( save_email.text !== stored_email.text ) return true
             if ( save_email.date !== stored_email.date ) return true
@@ -1856,6 +1983,28 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             m_prop_el.addEventListener('change', (event) => {
                 if ( g_current_edit_email ) {
                     g_current_edit_email.recipient = event.target.value
+                    update_just_date(g_current_edit_email,"edit-email-date")
+                    g_current_edit_email.dirty = true
+                }
+            });
+        }
+        //
+        m_prop_el = document.getElementById("edit-email-cc")
+        if ( m_prop_el ) {
+            m_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.cc = event.target.value
+                    update_just_date(g_current_edit_email,"edit-email-date")
+                    g_current_edit_email.dirty = true
+                }
+            });
+        }
+        //
+        m_prop_el = document.getElementById("edit-email-bcc")
+        if ( m_prop_el ) {
+            m_prop_el.addEventListener('change', (event) => {
+                if ( g_current_edit_email ) {
+                    g_current_edit_email.bcc = event.target.value
                     update_just_date(g_current_edit_email,"edit-email-date")
                     g_current_edit_email.dirty = true
                 }
@@ -2073,6 +2222,25 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
+    function toggle_table(ev,category) {
+        ev.preventDefault = true
+        ev.cancelBubble = true
+
+        let dn_ar = document.getElementById(`ardn-${category}`)
+        let rt_ar = document.getElementById(`arrt-${category}`)
+        let mul = document.getElementById(`table-${category}`)
+        if ( dn_ar && rt_ar && mul ) {
+            if ( rt_ar.style.display === "none" ) {
+                rt_ar.style.display = "inline-block"
+                dn_ar.style.display = "none"
+                mul.style.display = "none"
+            } else {
+                rt_ar.style.display = "none"
+                dn_ar.style.display = "inline-block"
+                mul.style.display = "block"
+            }
+        }
+    }
     /**
      * 
      */
@@ -2333,6 +2501,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 reload_email_by_undo(revert_email,previous_values)
                 sort_one_or_more('drafts')
             }
+        } else if ( g_current_edit_email && (g_current_edit_email._count_edits === 0) ) {
+            let save_checked_emails = g_current_email_list_for_op
+            g_current_email_list_for_op = [g_current_edit_email.id]
+            email_list_delete('drafts')
         }
     }
 
@@ -2551,9 +2723,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     setup_contacts_ops_dialog()
 
-
-
     setup_search_ops_dialog()
+
+
+    // attachments
+
+    function show_attachment(a_id) {
+        alert(`showing ${a_id}`)
+    }
 
 
 </script>
