@@ -719,6 +719,11 @@
         background-color: rgba(254, 255, 191, 1);
     }
 
+    .show-cat {
+        font-weight: bold;
+        color: rgb(9, 9, 59);
+    }
+
 </style>
 
 <script type="module">
@@ -997,6 +1002,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
         <div class="ops-button-containers">
+            <span id="mail_view_category" class="show-cat" >inbox: </span>&nbsp;&nbsp;
             <button id="mail_view_move" onclick="single_mail_ops(event);">ops</button>
         </div>
         <div class="mail-properties">
@@ -1056,6 +1062,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
         <div  class="ops-button-containers">
+            <span id="drafts_view_category" class="show-cat">drafts: </span>&nbsp;&nbsp;
             <button id="mail_edit_mode_send" onclick="do_send_mail(event);closefader(event,'email_edit');">send</button>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <button id="mail_edit_mode_save" onclick="edit_mail_save(event);" >save</button>
@@ -1338,6 +1345,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "cc" : "",
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "text" : "every message might have some text",
                         "attachments" : [],
                         "_count_edits" : 1, "_saved_updates" : [] 
@@ -1349,6 +1357,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "cc" : "",
                         "sender" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
+                        "category" : "sent",
                         "timestamp" : date.getTime(),
                         "text" : "sent message that might have some text",
                         "attachments" : [],
@@ -1362,6 +1371,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                         "sender" : "richard@myhost.local",
                         "date" : date.toLocaleString(),
                         "timestamp" : date.getTime(),
+                        "category" : "drafts",
                         "text" : "wrote message that might have some text",
                         "attachments" : [],
                         "_count_edits" : 1, "_saved_updates" : [] 
@@ -1416,26 +1426,31 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     //
     let bunch_of_mails = [
         { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
                         "attachments" : [],
                         "text" : "got 1 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
                         "attachments" : [],
                         "text" : "got 2 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
                         "attachments" : [],
                         "text" : "got 3 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
                         "attachments" : [],
                         "text" : "got 4 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
         { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+                        "category" : "inbox",
                         "recipient" : "richard@myhost.local",
                         "cc" : "",
                         "attachments" : [],
@@ -1489,6 +1504,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             let d = new Date()
             m.date = d.toLocaleString()
             m.timestamp = d.getTime()
+            m.category = mtype
         }
         if ( (mtype === "drafts") || (mtype === "sent") ) {
             for ( let m of new_mail_bunch ) {
@@ -1556,9 +1572,13 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             if ( mail_store.length ) {
                 for ( let m of email_list ) {
                     mail_store.unshift(m)
+                    m.category = mtype
                 }
             } else {
                 mail_store.set(email_list)
+                for ( let m of email_list ) {
+                    m.category = mtype
+                }
             }
         }
         sort_mail(mtype)
@@ -1671,7 +1691,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         if ( mail_store ) mail_store.reverse()
     }
 
-
     let mtype_title = document.getElementById("mail-type-title")
 
     window.mail_switch_to  = (mtype) => {
@@ -1766,6 +1785,18 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             atts_store.set([])
         }
     }
+
+
+    
+    window.indicate_page_on_window_banner = (mtype) => {
+        if ( mtype !== 'drafts' ) {
+            let wb_var = document.getElementById("mail_view_category")
+            if ( wb_var ) {
+                wb_var.innerText = `${mtype}: `
+            }
+        }
+    }
+
 
 
 </script>
@@ -2406,6 +2437,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                 clear_atts_list('view')
                 add_atts_to_list('view',message.attachments)
             }
+            indicate_page_on_window_banner(mtype)
         }
         //
     }
