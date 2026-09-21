@@ -85,11 +85,9 @@ try {
     let conf_str = fs.readFileSync("mail_bridge.conf").toString()
     g_config = JSON.parse(conf_str) 
 } catch (e) {
-    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED CONFIGURATION FILE, mail_bridge.conf  IN YOUR WORKING DIRECTORY")
+    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED CONFIGURATION FILE, manager.conf  IN YOUR WORKING DIRECTORY")
     process.exit(0)
 }
-
-
 
 
 /**
@@ -178,8 +176,73 @@ app.get('assets/:file', async (req, res) => {
 })
 
 
+//
+let mail_proto = {
+        "id" : 1,
+        "sender" : "richard@myhost.local",
+        "subject" : "", 
+        "date" : "", // date.toLocaleString(), 
+        "timestamp" : 0, //date.getTime(),
+        "recipient" : "",
+        "cc" : "", 
+        "bcc" : "",
+        "text" : "edit this message",
+        "_count_edits" : 0, "_saved_updates" : []
+    }
 
 
+// {
+//     "jsonrpc": '2.0',
+//     "method": method,
+//     "params": params,
+//     "id": Date.now() // Unique ID to match responses to requests
+// }
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+// {
+//     "jsonrpc": "2.0",
+//     "result": 19,
+//     "id": 1
+// }
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+// {
+//     "jsonrpc": "2.0",
+//     "error": {
+//         "code": -32601,
+//         "message": "Method not found"
+//     },
+//     "id": 1
+// }
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+//
+app.post('json/email', async (req, res) => {
+    //
+    if ( g_repo_bridge_ops ) {
+        //
+        let message = req.body
+        if ( message.id !== undefined ) {
+            let results = await g_repo_bridge_ops.handle_rpc(message.id,message.method,message.params)
+            if ( !(results.error) ) {
+                send(res,200,{ "status" : "OK", "result" : results.result, "id": message.id, "jsonrpc": "2.0" })
+            } else {
+                send(res,200,{ "status" : "ERR", "error" : results.error,  "id": message.id, "jsonrpc": "2.0" })
+            }
+        } else {
+            let op_ok = g_repo_bridge_ops.handle_rpc_notify(message.method,message.params)
+            if ( op_ok ) {
+                send(res,200,{ "status" : "OK" })
+            } else {
+                send(res,200,{ "status" : "ERR" , "error" : { "code" : "-2", "message" : "notify" } })
+            }
+        }
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+});
 
 
 
@@ -190,7 +253,7 @@ function handler_ws_messages(message_body) {
 
 function ws_proc_status() {
     if ( g_proc_managers && g_ws_socks ) {
-        let sendable = g_repo_ops.sendable_proc_data()
+        let sendable = g_repo_bridge_ops.sendable_proc_data()
         let op_message = {
             "op" : "proc-status",
             "data" : sendable

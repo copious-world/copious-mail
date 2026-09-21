@@ -26,11 +26,17 @@
     "scripts": {
         "test": "node test/index.js",
         "web" : "http-server test/",
+        "service": "node bin/index.js",
         "compile" : "npx mikado-compile ./tpl/",
         "compile-test" : "npx mikado-compile ./test/tpl/",
         "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
     },
     "dependencies": {
-        "mikado": "^0.8.400"
+        "mikado": "^0.8.400",
+        "@polka/send-type": "^0.5.2",
+        "body-parser": "^1.20.1",
+        "cors": "^2.8.5",
+        "polka": "^0.5.2",
+        "ws": "^8.11.0"
     }
 }

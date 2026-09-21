@@ -1259,8 +1259,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     <div>
         testing...
         <button onclick="add_mails()">add mails</button>
-        <button onclick="swap_two()">swap two mails</button>
-        <button onclick="delete_two()">delete two mails</button>
         <button onclick="sort_mail()">sort mails</button>
         <button onclick="reverse_mail()">reverse mails</button>
         <button onclick="add_contacts()">add contacts</button>
@@ -1284,7 +1282,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         <!-- Cancel button: closes modal, returnValue is "cancel" -->
         <button type="submit" formmethod="dialog" value="cancel">Cancel</button>
         <!-- Close/Confirm button: closes modal, returnValue is "confirm" or selected value -->
-        <button type="submit" value="confirm">OK</button>
+        <button id="sel-all-ops-modal-ok" type="submit" value="confirm" disabled>OK</button>
     </form>
 </dialog>
 
@@ -1480,46 +1478,60 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 
     //
-    let mail_proto = { "id" : 1, "sender" : "richard@myhost.local", "subject" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+    let mail_proto = {  "id" : 1,
+                        "sender" : "richard@myhost.local", 
+                        "category" : "",
+                        "subject" : "", 
                         "recipient" : "",
                         "cc" : "", "bcc" : "",
-                        "text" : "edit this message", "_count_edits" : 0, "_saved_updates" : []  }
+                        "date" : date.toLocaleString(), 
+                        "timestamp" : date.getTime(),
+                        "text" : "edit this message",
+                        "_count_edits" : 0, "_saved_updates" : []
+                    }
 
     let contact_proto = { "id" : 1, "email" : "", "name" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
                         "text" : "", "_count_edits" : 0, "_saved_updates" : []  }
 
     //
     // testing
-    window.add_mails = (mtype) => {
+    window.add_mails = async (mtype) => {
         if ( mtype === undefined ) mtype = g_current_mtype
         if ( mtype === "contacts" ) {
             add_contacts()
             return
         }
         let mail_store = store_of_mail_manager(mtype)
-        let new_mail_bunch = structuredClone(bunch_of_mails)
-        for ( let m of new_mail_bunch ) {
-            m.id = get_next_id()
-            //
-            let d = new Date()
-            m.date = d.toLocaleString()
-            m.timestamp = d.getTime()
-            m.category = mtype
-        }
+
+        let new_mail_bunch = []
         if ( (mtype === "drafts") || (mtype === "sent") ) {
+                
+            new_mail_bunch = await load_a_bunch_of_emails(mtype)
+
+            for ( let m of new_mail_bunch ) {
+                m.id = get_next_id()
+                //
+                let d = new Date()
+                m.date = d.toLocaleString()
+                m.timestamp = d.getTime()
+                m.category = mtype
+            }
             for ( let m of new_mail_bunch ) {
                 let recip = m.recipient
                 m.recipient = m.sender
                 m.sender = recip
             }
-        }
+            //
+            let j = 0
+            for ( let m of new_mail_bunch ) {
+                let a1 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of the attachments")
+                m.attachments.push(a1)
+                let a2 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of more attachments")
+                m.attachments.push(a2)
+            }
 
-        let j = 0
-        for ( let m of new_mail_bunch ) {
-            let a1 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of the attachments")
-            m.attachments.push(a1)
-            let a2 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of more attachments")
-            m.attachments.push(a2)
+        } else {
+            new_mail_bunch = await load_a_bunch_of_emails(mtype)
         }
 
 
@@ -1869,6 +1881,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         const dialog = document.getElementById(dialog_id);
         dialog._acceptance_action = false
         dialog._cancel_action = false
+        let self = dialog
         dialog.addEventListener('close', () => {
             const action = dialog.returnValue;
             switch (action) {
@@ -1887,7 +1900,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                     break
                 }
             }
-            restore_check_box_selections()  // if the dialog was used for a single email in view or drafts
+            restore_check_box_selections(self,action)  // if the dialog was used for a single email in view or drafts
         });
         disable_ok_button()
         return dialog
@@ -2014,12 +2027,18 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             try {
                 let decision = await p
                 if ( decision ) {
-                    const checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+                    let checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+                    if ( checkedBoxes.length === 0 ) {
+                        checkedBoxes = document.querySelectorAll(`.${mtype}_check_select`)
+                        set_check_boxes(mtype)
+                    }
                     const collectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+                    disable_selall_ok_button()
                     return collectedIds
                 }
             } catch (e) {
                 clear_check_boxes(mtype)
+                disable_selall_ok_button()
                 return false
             }
         }
@@ -2053,6 +2072,11 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         //
         select_all_op_cb_on_ops.checked = checked
         select_all_op_cb.checked = checked
+        if ( checked ) {
+            enable_selall_ok_button()
+        } else {
+            disable_selall_ok_button()
+        }
         //
         if ( checked ) {
             set_check_boxes(mtype)
@@ -2709,14 +2733,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     let g_var_restoreable_checkbox_ids = false
     let g_var_restoreable_mtype = false
-    function restore_check_box_selections() {
-        let mtype = window._current_mtype
-        restore_checkbox_pattern(mtype)
-        if ( g_var_restoreable_checkbox_ids ) {
-            g_current_email_list_for_op = g_var_restoreable_checkbox_ids
-            g_var_restoreable_checkbox_ids = false
+    function restore_check_box_selections(which_dialog,action) {
+        if ( (which_dialog !== select_all_op_dialog) || ((which_dialog === select_all_op_dialog) && (action === 'cancel')) ) {
+            let mtype = window._current_mtype
+            restore_checkbox_pattern(mtype)
+            if ( g_var_restoreable_checkbox_ids ) {
+                g_current_email_list_for_op = g_var_restoreable_checkbox_ids
+                g_var_restoreable_checkbox_ids = false
+            }
+            reset_select_all_op_cb()
         }
-        reset_select_all_op_cb()
     }
 
     function single_mail_ops(event) {
@@ -2844,6 +2870,23 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     function enable_ok_button() {
         let ok_btn = document.getElementById("email-ops-modal-ok")
+        if ( ok_btn ) {
+            ok_btn.disabled = false
+        }
+    }
+
+
+
+    function disable_selall_ok_button() {
+        let ok_btn = document.getElementById("sel-all-ops-modal-ok")
+        if ( ok_btn ) {
+            ok_btn.disabled = true
+        }
+    }
+
+
+    function enable_selall_ok_button() {
+        let ok_btn = document.getElementById("sel-all-ops-modal-ok")
         if ( ok_btn ) {
             ok_btn.disabled = false
         }
@@ -3592,6 +3635,346 @@ function handleDrop(e) {
     }
 }
 
+</script>
+<script>
+// MODULE: POST FETCH (windowized)
+
+
+// $>> may include interface helpers for displaying success and error
+
+
+
+//$>>	fetchUrl
+// //
+// fetch with GET method
+/**
+ * 
+ * Assume the endpoint is a complete URL (URI)
+ * Each of the methods (helpers) pick a set of parameters useful for calls made the most often.
+ * 
+ * The server should return an object, and this will parse it as JSON
+ * 
+ * @param {string} endpoint 
+ * @returns {object|boolean}  - returns false on error otherwise an object delivered from the server.
+ */
+async function fetchUrl(endpoint) {
+	let myRequest = new Request(endpoint);
+	try {
+		const body = await fetch(myRequest, {
+									method: 'GET', // *GET, POST, PUT, DELETE, etc.
+									mode: 'cors', // no-cors, *cors, same-origin
+									cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+									credentials: 'omit', // include, *same-origin, omit
+									redirect: 'follow', // manual, *follow, error
+									referrerPolicy: 'no-referrer', // no-referrer, *client
+								});
+		//
+		let infoObj = await body.json();
+		return(infoObj)
+		//
+	} catch (e) {
+		console.log(e.message)
+		return(false)
+	}
+}
+
+
+
+
+//$>>	fetchEndPoint
+/**
+ * 
+ * Requests an object from the including page's host.
+ * This is a simple object file fetch.
+ * It expects the server to return a string that can be parsed as JSON, or else there will be an error.
+ * The end point string should be some part of the local host API.
+ * If the port is passed, will be used to identify the server on the 
+ * 
+ * This method constructs the full URL(URI)
+ * 
+ * fetch with GET method * 
+ * @param {string} endpoint 
+ * @param {string} port -- optionals
+ * @returns {object|boolean}
+ */
+async function fetchEndPoint(endpoint,port) {
+	port = !(port) ? '' : ( port.length ? `:${port}`   : '')
+	let myRequest = new Request(`${location.protocol}//${location.hostname}${port}/${endpoint}`);
+	try {
+		const body = await fetch(myRequest, {
+									method: 'GET', // *GET, POST, PUT, DELETE, etc.
+									mode: 'cors', // no-cors, *cors, same-origin
+									cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+									credentials: 'omit', // include, *same-origin, omit
+									redirect: 'follow', // manual, *follow, error
+									referrerPolicy: 'no-referrer', // no-referrer, *client
+								});
+		//
+		let infoObj = await body.json();
+		return(infoObj)
+		//
+	} catch (e) {
+		console.log(e.message)
+		return(false)
+	}
+}
+
+
+//$>>	fetchTextFile
+/**
+ * Requests a string from the including page's host.
+ * This is a simple text file fetch.
+ * It expects the server to return a string, or else there will be an error.
+ * The end point string should be some part of the local host API.
+ * If the port is passed, will be used to identify the server on the 
+ * 
+ * This method constructs the full URL(URI)
+ * 
+ * fetch with GET method
+ * 
+ * @param {string} endpoint 
+ * @param {string} port -- optional
+ * @returns {string}
+ */
+async function fetchTextFile(endpoint,port) {
+	port = !(port) ? '' : ( port.length ? `:${port}`   : '')
+	let myRequest = new Request(`${location.protocol}//${location.hostname}${port}/${endpoint}`);
+	try {
+		const body = await fetch(myRequest, {
+									method: 'GET', // *GET, POST, PUT, DELETE, etc.
+									mode: 'cors', // no-cors, *cors, same-origin
+									cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+									credentials: 'omit', // include, *same-origin, omit
+									redirect: 'follow', // manual, *follow, error
+									referrerPolicy: 'no-referrer', // no-referrer, *client
+								});
+		//
+		let html = await body.text();
+		return(html)
+		//
+	} catch (e) {
+		console.log(e.message)
+		return(false)
+	}
+}
+
+
+//$>>	postData
+/**
+ * 
+ * call fetch with method POST tyr to help with parameters..  If data is FromData set do_stringify to false
+ * default content type 'application/json'
+ * User 'cors', Default cres = omit, If ctype == 'multipart/form-data' be sure to use FormData -- lets fetch set content type.
+ * RETURNS: parsed JSON object or an empty object. ... Check for fields
+ * @param {string} url 
+ * @param {object} data 
+ * @param {string} creds - (optional)
+ * @param {boolean} do_stringify 
+ * @param {string} ctype - content type
+ * @returns {object}
+ */
+async function postData(url = '', data = {}, creds = 'omit', do_stringify = true, ctype) {
+	let content_type = 'application/json'
+	if ( ctype !== undefined ) {
+		content_type = ctype            // ctype is content type
+	}
+	let options = {
+		method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		mode: 'cors', // no-cors, *cors, same-origin
+		cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+		credentials: creds, // include, *same-origin, omit
+		headers: {
+			'Content-Type': content_type
+		},
+		redirect: 'follow', // manual, *follow, error
+		referrerPolicy: 'no-referrer', // no-referrer, *client
+		body: (do_stringify ? JSON.stringify(data)  : data)	// body data type must match "Content-Type" header
+	}
+
+	if ( ctype === 'multipart/form-data') {
+		delete options.headers['Content-Type']  // content type will be set automatically with a boundary
+	}
+
+	// Default options are marked with *
+	const response = await fetch(url, options);
+	if ( response.ok == false ) {
+		console.log(response.status + ': ' + response.statusText)
+		return {}
+	} else {
+		return await response.json(); // parses JSON response into native JavaScript objects
+	}
+}
+
+
+
+//$>>	postDataWithRefer
+
+/**
+ * call fetch with method POST try to help with parameters..  If data is FromData set do_stringify to false
+ * default content type 'application/json'
+ * User 'cors', Default cres = omit, If ctype == 'multipart/form-data' be sure to use FormData -- lets fetch set content type.
+ * 
+ * @param {string} url 
+ * @param {object} data 
+ * @param {string} creds 
+ * @param {boolean} do_stringify 
+ * @param {string} ctype 
+ * @returns {object} - parsed JSON object or an empty object. ... Check for fields
+ */
+async function postDataWithRefer(url = '', data = {}, creds = 'omit', do_stringify = true, ctype) {
+	let content_type = 'application/json'
+	if ( ctype !== undefined ) {
+		content_type = ctype            // ctype is content type
+	}
+	let options = {
+		method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		mode: 'cors', // no-cors, *cors, same-origin
+		cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+		credentials: creds, // include, *same-origin, omit
+		headers: {
+			'Content-Type': content_type
+		},
+		redirect: 'error', // manual, *follow, error
+		referrerPolicy: 'origin', // no-referrer, origin
+		body: (do_stringify ? JSON.stringify(data)  : data)	// body data type must match "Content-Type" header
+	}
+
+	if ( ctype === 'multipart/form-data') {
+		delete options.headers['Content-Type']  // content type will be set automatically with a boundary
+	}
+
+	// Default options are marked with *
+	const response = await fetch(url, options);
+	if ( response.ok == false ) {
+		console.log(response.status + ': ' + response.statusText)
+		return {}
+	} else {
+		return await response.json(); // parses JSON response into native JavaScript objects
+	}
+}
+
+
+//$>>	post_submit
+
+/**
+ * Takes in a list of names of form fields each having a "value" member.
+ * The list is used to contsuct a JSON object which will be the body of the request.
+ * 
+ * This method then calls postData with the url found in the field with id "post_url"
+ * 
+ * If visusl indicators have been programmed with respect to this method.
+ * If the `hide_interface_box` has been defined, then it will be called.
+ * Similarly, `show_box` for ids 'success-box' and 'error-box'
+ * 
+ * @param {Array} fields 
+ */
+async function post_submit(fields) {
+	if ( !(Array.isArray(fields)) ) return
+	let bdy = {}
+	fields.forEach(element => {
+		let fld = document.getElementById(element)
+		if ( fld ) {
+			bdy[element] = fld.value
+		}
+	});
+	let url = bdy.post_url
+	if ( url ) {
+		delete bdy.post_url
+		//
+		let resp = await postData(url, bdy)
+		//
+		if ( resp && typeof hide_interface_box === "function" ) hide_interface_box()
+		if ( resp && (resp.OK === 'true') ) {
+			if( typeof show_box === "function" ) show_box('success-box')
+		} else {
+			if( typeof show_box === "function" ) show_box('error-box')
+		}
+	}
+}
+
+
+
+//$>>	make_host_request
+
+/**
+ * 
+ * This method wraps postData for the one use case that object (JSON) returned 
+ * by the host has a field "OK", which may have string values "true"  or "false"
+ * 
+ * @param {string} endpoint 
+ * @param {object} data 
+ * @returns {object|boolean}
+ */
+async function make_host_request(endpoint,data) {
+	try {
+		let resp = await postData(endpoint, data ) //,'include')
+		if ( resp.OK === "true" ) {
+			return resp.data
+		} else {
+			return false
+		}
+	} catch (e) {
+		return false
+	}
+}
+
+
+
+
+//$$EXPORTABLE::
+/*
+fetchEndPoint
+fetchTextFile
+fetchUrl
+postData
+post_submit
+*/
+
+</script>
+<script>
+
+    class MailJsonRpc {
+        constructor(mtype,method,params) {
+            this.id = 10 // get a good method for this id
+            this.params = {
+                "mail_type" : mtype,
+                "params" : params,
+                "date" : Date.now()
+            }
+            this.method = method
+            this.jsonrpc = '2.0'
+        }
+    }
+
+    window._current_user_account = {
+        "name" : "testing",
+        "password" : "testing"
+    }
+
+    let web_page_port = 9989
+    let wss_app_port = 9990
+
+
+    //
+    // let mail_proto = { "id" : 1, "sender" : "richard@myhost.local", "subject" : "", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
+    //                     "recipient" : "",
+    //                     "cc" : "", "bcc" : "",
+    //                     "text" : "edit this message", "_count_edits" : 0, "_saved_updates" : []  }
+
+    // TALK TO THE SERVER
+    async function load_a_bunch_of_emails(mtype) {
+
+        let data = new MailJsonRpc(mtype,"get-mail")
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            console.log(rpc_result)
+            return rpc_result.result
+        }
+        return []
+    }
 
 </script>
 <script>
