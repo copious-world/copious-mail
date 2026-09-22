@@ -596,6 +596,15 @@
         margin-top: 6px;
     }
 
+    .style-confirm-properties {
+        display: grid;
+        grid-template-columns: 50% 1fr;
+        gap: 6px 66px;
+        align-items: center;
+        padding: 4px;
+        background: #fff6d9ff;
+    }
+
     .attachments-controls {
         background-color: rgb(243, 239, 219);
         border-bottom: 1px solid rgb(9, 54, 9);
@@ -641,6 +650,11 @@
     }
 
     .select-all-ops-properties-on-ops .field-label {
+        font-size:smaller;
+        color: #1f1c2eff;
+    }
+
+    .style-confirm-properties .field-label {
         font-size:smaller;
         color: #1f1c2eff;
     }
@@ -997,7 +1011,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 <div id="email_view" class="right_fade_able" style="z-index:124" >
 	<div class="togglebar" >
-		<span class="closer_x" onmousedown="closefader(event,'email_view')">X</span>
+		<span class="closer_x" onmousedown="closefader(event,'email_view');void_current_edit_email()">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
@@ -1055,15 +1069,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
   }
 </style>
 
+
 <div id="email_edit" class="right_fade_able" style="z-index:124" >
 	<div class="togglebar" >
-		<span class="closer_x" onmousedown="closefader(event,'email_edit');mail_edit_mode_reset(event);">X</span>
+		<span class="closer_x" onmousedown="closefader(event,'email_edit');mail_edit_mode_reset(event);void_current_edit_email();">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
         <div  class="ops-button-containers">
             <span id="drafts_view_category" class="show-cat">drafts: </span>&nbsp;&nbsp;
-            <button id="mail_edit_mode_send" onclick="do_send_mail(event);closefader(event,'email_edit');">send</button>
+            <button id="mail_edit_mode_send" onclick="do_send_mail_closefader(event)">send</button>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <button id="mail_edit_mode_save" onclick="edit_mail_save(event);" >save</button>
             <button id="mail_edit_mode_cancel" onclick="mail_edit_mode_reset(event);closefader(event,'email_edit');" >cancel</button>
@@ -1286,9 +1301,38 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     </form>
 </dialog>
 
+
+<dialog id="style-confirm-modal" style="min-width: 300px;">
+    <form method="dialog">
+        <div id="blocking-confirmation" >
+            <h5>error: empty fields not allowed</h5>
+            <div id="list-blocking-confirmation" class="style-confirm-properties">
+
+            </div>
+        </div>
+        <h5></h5>
+        <div id="warn-confirmation">
+            <h5>warning: empty fields may be awkward</h5>
+            <div id="list-warn-confirmation" class="style-confirm-properties">
+
+            </div>
+        </div>
+        <!-- Cancel button: closes modal, returnValue is "cancel" -->
+        <button type="submit" formmethod="dialog" value="cancel">Cancel</button>
+        <!-- Close/Confirm button: closes modal, returnValue is "confirm" or selected value -->
+        <button id="style-confirm-modal-ok" type="submit" value="confirm" disabled>Continue</button>
+    </form>
+</dialog>
+
+
 </body>
 </html>
 <script>
+    function noop(event) {
+        console.log(event?.target?.id)
+    }
+
+
     class Attachment {
         constructor(id,title,data) {
             this.id = id
@@ -1907,7 +1951,11 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     function setup_email_ops_dialog() {
-        setup_modal_response('email-ops-modal')
+        let diag = setup_modal_response('email-ops-modal')
+        diag._cancel_action = () => {
+            disable_ok_button()
+            disable_selall_ok_button()
+        }
     }
 
     function setup_contacts_ops_dialog() {
@@ -2082,6 +2130,9 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             set_check_boxes(mtype)
         } else {
             restore_checkbox_pattern(mtype)
+            if ( check_master === select_all_op_cb_on_ops ) {
+                disable_ok_button_if_no_selection(mtype)
+            }
         }
         collect_emails_list_for_op(mtype)
     }
@@ -2717,6 +2768,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     async function do_op_modal(mtype,mail_id_list_set = false) {
         disable_ok_button()
+        disable_selall_ok_button()
         let m_list = mail_id_list_set ? false : await get_checked_messages_or_ask_for_all(mtype)
         if ( m_list || mail_id_list_set ) {
             if ( !(mail_id_list_set) ) {
@@ -2782,6 +2834,45 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
+
+    async function is_ready_to_send_email(email) {
+        // is_ready_to_send_email
+        if ( email ) {
+            // ---- ---- ---- ---- ---- ---- ---- ----
+            let recipient = email.recipient
+            let sender = email.sender
+            let subject = email.subject
+            let text = email.text
+            let ready = true
+            // ---- ---- ---- ---- ---- ---- ---- ----
+            ready &&= (recipient.length !== 0)
+            ready &&= (sender.length !== 0)
+            ready &&= (subject.length !== 0)
+            ready &&= (text.length !== 0)
+
+            if ( !ready ) {
+                let user_should_see = {}
+                if (sender.length === 0) {
+                    user_should_see.sender = true  // not optional
+                }
+                if (recipient.length === 0) {
+                    user_should_see.recipient = true  // not optional
+                }
+                if (subject.length === 0) {
+                    user_should_see.subject = true  // not optional
+                }
+                if (text.length === 0) {
+                    user_should_see.text = false  //    optional
+                }
+                ready = await g_confirmation_modal.stylish_confirm(user_should_see)
+            }
+
+            return ready
+        }
+        return false
+    }
+
+
     async function send_email_list(from) {
         let id_list = g_current_email_list_for_op
         let object_list = get_list_of_objects(from,id_list)
@@ -2796,11 +2887,24 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     async function do_send_mail(event) {
         let email = g_current_edit_email
         if ( email ) {
-            let save_email_list_for_op = g_current_email_list_for_op
-            g_current_email_list_for_op = [email.id]
-            await send_email_list('drafts')
-            g_current_email_list_for_op = save_email_list_for_op
-            mail_switch_to('sent')
+            if ( await is_ready_to_send_email(email) ) {
+                let save_email_list_for_op = g_current_email_list_for_op
+                g_current_email_list_for_op = [email.id]
+                await send_email_list('drafts')
+                g_current_email_list_for_op = save_email_list_for_op
+                mail_switch_to('sent')
+                return true
+            }
+        }
+        return false
+    }
+
+
+    async function do_send_mail_closefader(event) {
+        event.preventDefault()
+        let status = await do_send_mail(event)
+        if ( status ) {
+            closefader(event,'email_edit')
         }
     }
 
@@ -2858,6 +2962,9 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         // 
     }
 
+    function void_current_edit_email() {
+        g_current_edit_email = false
+    }
 
 
     function disable_ok_button() {
@@ -2892,6 +2999,36 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
 
+    function enable_ok_button_if_any_selected(mtype) {
+        let checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+        if ( checkedBoxes.length > 0 ) {
+            enable_ok_button()
+        } else {
+            if ( g_current_edit_email !== false ) {
+                if ( g_current_email_list_for_op.length === 0 ) {
+                    g_current_email_list_for_op.unshift(g_current_edit_email.id)   
+                }
+                if ( g_current_email_list_for_op[0] == g_current_edit_email.id ) {
+                    enable_ok_button()
+                }
+            }
+        }
+    }
+
+
+    function disable_ok_button_if_no_selection(mtype) {
+        let checkedBoxes = document.querySelectorAll(`.${mtype}_check_select:checked`);
+        if ( checkedBoxes.length === 0 ) {
+            if ( g_current_edit_email !== false ) {
+                if ( g_current_email_list_for_op.length === 0 ) {
+                    g_current_email_list_for_op.unshift(g_current_edit_email.id)   
+                }
+                return
+            }
+            disable_ok_button()
+        } 
+    }
+
 
     function prep_send_email_list(from) {
         if ( email_op_message_el ) {
@@ -2901,7 +3038,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                     send_email_list(from)
                 }
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
     function prep_email_list_move_to(from,to) {
@@ -2910,7 +3047,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             email_op_dialog._acceptance_action = () => {
                 email_list_move_to(from,to)
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
     function prep_email_list_copy_to(from,to) {
@@ -2919,7 +3056,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             email_op_dialog._acceptance_action = () => {
                 email_list_copy_to(from,to)
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
     function prep_email_list_delete(from) {
@@ -2930,7 +3067,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
                     email_list_delete(from)
                 }
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
 
@@ -2942,7 +3079,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             email_op_dialog._acceptance_action = () => {
                 reply_to_emails(from)
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
 
@@ -2952,7 +3089,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             email_op_dialog._acceptance_action = () => {
                 reply_all_to_emails(from)
             }
-            enable_ok_button()
+            enable_ok_button_if_any_selected(from)
         }
     }
 
@@ -2962,10 +3099,10 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
     function reply_to_emails(from) {
-        enable_ok_button()
+        enable_ok_button_if_any_selected(from)
     }
     function reply_all_to_emails(from) {
-        enable_ok_button()
+        enable_ok_button_if_any_selected(from)
     }
 
 
@@ -3181,6 +3318,117 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     window._x_app_handle_files = attachment_drop_file_handler
 
+</script>
+<script>
+
+    class StylishConfirmModalOps {
+
+        constructor() {
+            this.style_confirm_modal = document.getElementById("style-confirm-modal")
+            this.stylish_confirm_ok_btn = document.getElementById("style-confirm-modal-ok")
+            this.stylish_blocking_div = document.getElementById("blocking-confirmation")
+            this.stylish_warn_div = document.getElementById("warn-confirmation")
+            this.stylish_confirm_blockers = document.getElementById("list-blocking-confirmation")
+            this.stylish_confirm_optional = document.getElementById("list-warn-confirmation")
+            this.setup_modal_confirmation_response()
+
+            this.dialog_promise = false
+            this.resolver = () => {}
+            this.rejector = () => {}
+        }
+
+        setup_modal_confirmation_response() {
+            const dialog = this.style_confirm_modal
+            if ( dialog ) {
+                dialog.addEventListener('close', () => {
+                    const action = dialog.returnValue;
+                    switch (action) {
+                        case "confirm" : {
+                            if ( this.dialog_promise  ) {
+                                this.resolver()
+                            }
+                            break;
+                        }
+                        case "cancel" : {
+                            if ( this.dialog_promise  ) {
+                                this.rejector()
+                            }
+                            break
+                        }
+                    }
+                });
+            }
+        }
+
+
+        async show_stylish_confirmation() {
+            if ( this.style_confirm_modal ) {
+                this.dialog_promise = new Promise((resolve,reject) => {
+                    this.resolver = () => { resolve(true) }
+                    this.rejector = () => { reject(false) } 
+                })
+                this.style_confirm_modal.showModal();
+                try {
+                    await this.dialog_promise
+                    return true
+                } catch(e) {
+                    return false
+                }
+            }
+            return false
+        }
+
+        async stylish_confirm(required_and_warn) {
+            if ( typeof required_and_warn === "object" ) {
+                this.stylish_confirm_ok_btn.disabled = true
+                this.stylish_blocking_div.style.display = "none"
+                this.stylish_warn_div.style.display = "none"
+                //
+                let blockers = []
+                let optionals = []
+                for ( let [field_name,is_blocking] of Object.entries(required_and_warn) ) {
+                    if ( is_blocking ) {
+                        blockers.push(field_name)
+                    } else {
+                        optionals.push(field_name)
+                    }
+                }
+                if ( blockers.length ) {
+                    this.stylish_blocking_div.style.display = "block"
+                }
+                if ( optionals.length ) {
+                    this.stylish_warn_div.style.display = "block"
+                }
+                if ( blockers.length === 0 ) {
+                    this.stylish_confirm_ok_btn.disabled = false
+                }
+                let blocker_list = ""
+                let warning_list = ""
+                for ( let blocker of blockers ) {
+                    blocker_list += `<div class="field-label">${blocker}</div><div class="field-value">empty</div>`
+                }
+                for ( let option of optionals ) {
+                    warning_list += `<div class="field-label">${option}</div><div class="field-value">empty</div>`
+                }
+                if ( blocker_list.length ) {
+                    this.stylish_confirm_blockers.innerHTML = blocker_list
+                }
+                if ( warning_list.length ) {
+                    this.stylish_confirm_optional.innerHTML = warning_list
+                }
+
+                return await this.show_stylish_confirmation()
+            }
+            return false
+        }
+
+
+    }
+
+
+    window.g_confirmation_modal = new StylishConfirmModalOps()
+
+    
 </script>
 <script>
 

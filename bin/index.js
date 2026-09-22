@@ -16,7 +16,6 @@ app.use(cors())
 //
 const fs = require('fs')
 const http = require('http')
-const path = require('path')
 
 const WebSocket = require('ws')
 const WebSocketServer = WebSocket.Server;
