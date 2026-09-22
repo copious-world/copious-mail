@@ -223,7 +223,7 @@ app.post('json/email', async (req, res) => {
         //
         let message = req.body
         if ( message.id !== undefined ) {
-            let results = await g_repo_bridge_ops.handle_rpc(message.id,message.method,message.params)
+            let results = await g_repo_bridge_ops.handle_rpc(message.method,message.params)
             if ( !(results.error) ) {
                 send(res,200,{ "status" : "OK", "result" : results.result, "id": message.id, "jsonrpc": "2.0" })
             } else {

@@ -1083,7 +1083,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
             <button id="mail_edit_mode_save" onclick="edit_mail_save(event);" >save</button>
             <button id="mail_edit_mode_cancel" onclick="mail_edit_mode_reset(event);closefader(event,'email_edit');" >cancel</button>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <button id="mail_remove" onclick="single_mail_ops(event);">ops</button>
+            <button id="mail_ops" onclick="single_mail_ops(event);">ops</button>
         </div>
         <div class="edit-mail-properties">
             <div class="field-label">From:</div>
@@ -1540,46 +1540,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     //
     // testing
     window.add_mails = async (mtype) => {
+        //
         if ( mtype === undefined ) mtype = g_current_mtype
         if ( mtype === "contacts" ) {
             add_contacts()
             return
         }
         let mail_store = store_of_mail_manager(mtype)
-
-        let new_mail_bunch = []
-        if ( (mtype === "drafts") || (mtype === "sent") ) {
-                
-            new_mail_bunch = await load_a_bunch_of_emails(mtype)
-
-            for ( let m of new_mail_bunch ) {
-                m.id = get_next_id()
-                //
-                let d = new Date()
-                m.date = d.toLocaleString()
-                m.timestamp = d.getTime()
-                m.category = mtype
-            }
-            for ( let m of new_mail_bunch ) {
-                let recip = m.recipient
-                m.recipient = m.sender
-                m.sender = recip
-            }
-            //
-            let j = 0
-            for ( let m of new_mail_bunch ) {
-                let a1 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of the attachments")
-                m.attachments.push(a1)
-                let a2 = new Attachment(get_next_id(),`at-test ${j++}`,"This is a test of more attachments")
-                m.attachments.push(a2)
-            }
-
-        } else {
-            new_mail_bunch = await load_a_bunch_of_emails(mtype)
-        }
-
-
+        //
         if ( mail_store ) {
+            let new_mail_bunch = await load_a_bunch_of_emails(mtype)
             if ( mail_store.length ) {
                 for ( let m of new_mail_bunch ) {
                     mail_store.unshift(m)
@@ -1594,17 +1564,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 
     // useful
-    window.add_contacts = () => {
+    window.add_contacts = async () => {
         let contact_store = store_of_mail_manager('contacts')
-        let new_contact_bunch = structuredClone(bunch_of_contacts)
-        for ( let c of new_contact_bunch ) {
-            c.id = get_next_id()
-            //
-            let d = new Date()
-            c.date = d.toLocaleString()
-            c.timestamp = d.getTime()
-            c._count_edits = 1
-        }
         if ( contact_store ) {
             if ( contact_store.length ) {
                 for ( let c of new_contact_bunch ) {
@@ -2711,12 +2672,12 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     async function add_objects_to_list(to,object_list) {
         add_emails_to_list(to,object_list)
-        // server communication
+        add_emails_to_server(to,object_list)
     }
 
     async function delete_objects_from_list(from,id_list) {
         delete_emails_from_list(from,id_list)
-        // server communication
+        delete_emails_from_server(from,id_list)
     }
 
     const email_op_message_el = document.getElementById("chosen_operation")
@@ -2959,7 +2920,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
     function edit_mail_save(event) {
         increment_email_save_count()
-        // 
+        save_mail(g_current_edit_email)
     }
 
     function void_current_edit_email() {
@@ -3094,20 +3055,33 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
-    async function send_emails(object_list) {
-        return true
-    }
-
+    /**
+     * These functions setup the mail draft (like create draft, that will allow for editing followed by a send)
+     * 
+     * Server communication happens when these are send from drafts...
+     * OR when the draft is saved (checkpoint save)
+     * 
+     */
     function reply_to_emails(from) {
         enable_ok_button_if_any_selected(from)
+        setup_email_reply_editing(from)
     }
+
     function reply_all_to_emails(from) {
         enable_ok_button_if_any_selected(from)
     }
-
-
-
     
+
+    /**
+     */
+    function setup_email_reply_editing(from) {
+
+    }
+    function setup_email_reply_all_editing(from) {
+
+    }
+    
+
     // contact edting ops
     const contact_edit_mode_select_el = document.getElementById("contact_edit_mode_select")
     const contact_edit_mode_cancel = document.getElementById("contact_edit_mode_cancel")
@@ -3168,7 +3142,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         }
     }
     //
-
 
     function increment_contact_save_count() {
         if ( g_current_edit_contact ) {
@@ -3232,7 +3205,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         if ( g_current_edit_contact ) {
             if ( confirm("This action cannot be undone. Proceed?") ) {
                 delete_emails_from_list('contacts',[g_current_edit_contact.id])
-                // server communication
+                remove_contact_from_server(g_current_edit_contact)
             }
         }
     }
@@ -4181,6 +4154,22 @@ post_submit
 </script>
 <script>
 
+    async function hash_of(string) {
+        let buf = new TextEncoder()
+        string = buf.encode(string)
+        let hash = await window.crypto.subtle.digest('SHA-256',string)
+        return new Uint8Array(hash).toBase64()
+    }
+
+    function gen_json_id(mail_ob) {
+        if ( mail_obj ) {
+            return 10
+        } else {
+            let current_user_name = window._current_user_account.name
+            return hash_of(current_user_name + Date.now())
+        }
+    }
+
     class MailJsonRpc {
         constructor(mtype,method,params) {
             this.id = 10 // get a good method for this id
@@ -4211,7 +4200,6 @@ post_submit
 
     // TALK TO THE SERVER
     async function load_a_bunch_of_emails(mtype) {
-
         let data = new MailJsonRpc(mtype,"get-mail")
 
         let port = web_page_port
@@ -4222,6 +4210,131 @@ post_submit
             return rpc_result.result
         }
         return []
+    }
+
+    async function load_a_bunch_of_contacts() {
+        let data = new MailJsonRpc('contacts',"get-contacts")
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            console.log(rpc_result)
+            return rpc_result.result
+        }
+        return []
+    }
+
+    // * add_objects_to_list
+    // * delete_objects_from_list
+    // * remove_one_contact
+    // * send_emails
+    // * save_mail -- to drafts
+    // * save_contact
+
+    /* 
+    "get-mail"
+    "store-mail"
+    "remove-mail"
+    "send-mail"
+    "store-draft"
+    "get-contacts"
+    "store-contact"
+    "remove-contact"
+    */
+
+    /**
+     */
+    async function add_emails_to_server(to,object_list) {
+        // server communication
+        let data = new MailJsonRpc(to,"store-mail",object_list)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            console.log(rpc_result)
+            return true
+        }
+        return false
+    }
+
+    /**
+     */
+    async function delete_emails_from_server(from,id_list) {
+        // server communication
+        let data = new MailJsonRpc(to,"remove-mail",id_list)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            console.log(rpc_result)
+            return true
+        }
+        return false
+    }
+
+
+    /**
+     */
+    async function send_emails(object_list) {
+        // server communication
+        let data = new MailJsonRpc("sent","send-mail",object_list)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            return true
+        }
+        return false
+    }
+
+    /**
+     */
+    async function save_mail(email_obj) {
+        // server communicate
+        let data = new MailJsonRpc("drafts","store-draft",email_obj)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            return true
+        }
+        return false
+    }
+
+
+    /**
+     */
+    async function remove_contact_from_server(a_contact) {
+        // server communication
+        let data = new MailJsonRpc("contacts","remove-contact",a_contact)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            return true
+        }
+        return false
+    }
+    
+    /**
+     */
+    async function save_contact(edited_contact) {
+        // server communication
+        let data = new MailJsonRpc("contacts","store-contact",edited_contact)
+
+        let port = web_page_port
+        let url = `http://localhost:${port}/json/email`
+        let rpc_result = await postData(url, data)
+        if ( rpc_result && (rpc_result.error === undefined) ) {
+            return true
+        }
+        return false
     }
 
 </script>
