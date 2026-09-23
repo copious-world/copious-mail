@@ -1377,61 +1377,6 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     }
 
 
-
-    // TESTING
-    let date = new Date()
-    let start_id_for_testing = 1;
-    let one_mail =  {   "id" : start_id_for_testing++, "sender" : "mail@b.com", 
-                        "subject" : "this is a test",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "date" : date.toLocaleString(),
-                        "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "text" : "every message might have some text",
-                        "attachments" : [],
-                        "_count_edits" : 1, "_saved_updates" : [] 
-                    }
-    mail_managers['inbox'].store.push(one_mail)
-
-    let one_sent =  { "id" : start_id_for_testing++,
-                        "recipient" : "mail@b.com", "subject" : "this is a test",
-                        "cc" : "",
-                        "sender" : "richard@myhost.local",
-                        "date" : date.toLocaleString(),
-                        "category" : "sent",
-                        "timestamp" : date.getTime(),
-                        "text" : "sent message that might have some text",
-                        "attachments" : [],
-                        "_count_edits" : 1, "_saved_updates" : []
-                    }
-    mail_managers['sent'].store.push(one_sent)
-
-
-    let one_drafts =  { "id" : start_id_for_testing++, "recipient" : "mail@b.com", "subject" : "this is a test",
-                        "cc" : "",
-                        "sender" : "richard@myhost.local",
-                        "date" : date.toLocaleString(),
-                        "timestamp" : date.getTime(),
-                        "category" : "drafts",
-                        "text" : "wrote message that might have some text",
-                        "attachments" : [],
-                        "_count_edits" : 1, "_saved_updates" : [] 
-                     }
-    mail_managers['drafts'].store.push(one_drafts)
-
-
-    let one_contact = {   "id" : start_id_for_testing++, "email" : "mail@b.com", 
-                    "name" : "Samkin Napkin",
-                    "date" : date.toLocaleString(),
-                    "timestamp" : date.getTime(),
-                    "text" : "some kid in L.A.",
-                    "_count_edits" : 1, "_saved_updates" : [] 
-                }
-
-    mail_managers['contacts'].store.push(one_contact)
-
-
     /**
      * 
      */
@@ -1465,61 +1410,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     /** --------------------------- */
     let g_current_mtype = "inbox"
     window._current_mtype = "inbox"
-    //
-    let bunch_of_mails = [
-        { "id" : 1, "sender" : "mail@a.com", "subject" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "attachments" : [],
-                        "text" : "got 1 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
-        { "id" : 1, "sender" : "mail@s.com", "subject" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "attachments" : [],
-                        "text" : "got 2 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
-        { "id" : 1, "sender" : "mail@d.com", "subject" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "attachments" : [],
-                        "text" : "got 3 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
-        { "id" : 1, "sender" : "mail@f.com", "subject" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "attachments" : [],
-                        "text" : "got 4 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
-        { "id" : 1, "sender" : "mail@g.com", "subject" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "category" : "inbox",
-                        "recipient" : "richard@myhost.local",
-                        "cc" : "",
-                        "attachments" : [],
-                        "text" : "got 5 message that might have some text", "_count_edits" : 1, "_saved_updates" : [] },
-    ]
-    //
-    let bunch_of_contacts = [
-        { "id" : 1, "email" : "mail@a.com", "name" : "this is 1 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "text" : "got 1 contact that might have some text", "_count_edits" : 0, "_saved_updates" : []  },
-        { "id" : 1, "email" : "mail@s.com", "name" : "this is 2 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "text" : "got 2 contact that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
-        { "id" : 1, "email" : "mail@d.com", "name" : "this is 3 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "text" : "got 3 contact that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
-        { "id" : 1, "email" : "mail@f.com", "name" : "this is 4 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "text" : "got 4 contact that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
-        { "id" : 1, "email" : "mail@g.com", "name" : "this is 5 test", "date" : date.toLocaleString(), "timestamp" : date.getTime(),
-                        "text" : "got 5 contact that might have some text", "_count_edits" : 0, "_saved_updates" : [] },
-    ]
 
-    //
-    window.largest_id = start_id_for_testing
+    //  MAIL IDENTIFIER -- need something better
+    window.largest_id = 20
 
     window.get_next_id = () => {
         window.largest_id++
         return window.largest_id
     }
 
+    let date = new Date()
 
     //
     let mail_proto = {  "id" : 1,
@@ -1550,7 +1450,7 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         //
         if ( mail_store ) {
             let new_mail_bunch = await load_a_bunch_of_emails(mtype)
-            if ( mail_store.length ) {
+            if ( new_mail_bunch.length ) {
                 for ( let m of new_mail_bunch ) {
                     mail_store.unshift(m)
                 }
@@ -1567,7 +1467,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     window.add_contacts = async () => {
         let contact_store = store_of_mail_manager('contacts')
         if ( contact_store ) {
-            if ( contact_store.length ) {
+            let new_contact_bunch = await load_a_bunch_of_contacts()
+            if ( new_contact_bunch.length ) {
                 for ( let c of new_contact_bunch ) {
                     contact_store.unshift(c)
                 }
@@ -4248,7 +4149,7 @@ post_submit
     async function add_emails_to_server(to,object_list) {
         // server communication
         let data = new MailJsonRpc(to,"store-mail",object_list)
-
+        //
         let port = web_page_port
         let url = `http://localhost:${port}/json/email`
         let rpc_result = await postData(url, data)
@@ -4263,8 +4164,8 @@ post_submit
      */
     async function delete_emails_from_server(from,id_list) {
         // server communication
-        let data = new MailJsonRpc(to,"remove-mail",id_list)
-
+        let data = new MailJsonRpc(from,"remove-mail",id_list)
+        //
         let port = web_page_port
         let url = `http://localhost:${port}/json/email`
         let rpc_result = await postData(url, data)
@@ -4336,6 +4237,113 @@ post_submit
         }
         return false
     }
+
+</script>
+<script>
+//
+let ws_url = `http://localhost:${wss_app_port}`
+let g_ws_controller = null
+
+class WsSocketController {
+    constructor(url) {
+        this.url = url
+        this.socket = new WebSocket(url);
+
+        // Connection successfully opened
+        let sock = this.socket
+        this.socket.onopen = (event) => {
+            if ( sock ) {
+                let sid = true // an actual id from the server so that it can know itself
+                let message = {
+                    "type" : "mail-ops",
+                    "message" : {
+                        "op" : "initial-messages",
+                        "server_id" : sid,
+                        "data" : {
+                            "user_name" : window._current_user_account.name
+                        }
+                    }
+                }
+                let msg_as_str = JSON.stringify(message)
+                sock.send(msg_as_str)
+            }
+            // statusSpan.textContent = 'Connected';
+            // statusSpan.style.color = 'green';
+        };
+
+        // Listen for incoming messages from server
+        this.socket.onmessage = (event) => {
+            let msg = JSON.parse(event.data)
+            let data = msg.data
+console.log(data)
+            // 
+            if ( data.op ) {
+                switch ( data.op ) {
+                    case "initial-messages":
+                    case "all-updates" : {
+                        let message_map = data.data
+                        if ( typeof message_map === "object" ) {
+                            for ( let [ky,mlist] of Object.entries(message_map) ) {
+                                window.add_emails_to_list(ky,mlist)
+                            }
+                        }
+                        break
+                    }
+                    case "emails" : {
+                        break;
+                    }
+                    case "contacts" : {
+                        break;
+                    }
+                    case "nofify" : {
+                        break;
+                    }
+                    case "no-delivery" : {
+                        break;
+                    }
+                    case "proc-status": {
+                        console.log(data.data)
+                        break
+                    }
+                }
+            }
+        };
+
+        // Connection closed
+        this.socket.onclose = (event) => {
+            // statusSpan.textContent = 'Disconnected';
+            // statusSpan.style.color = 'red';
+            this.socket = null;
+        };
+
+        // Handle errors
+        this.socket.onerror = (error) => {
+            console.log(error)
+        };
+
+
+        window.addEventListener('close',() => {
+            this.socket.close();
+        })
+    }
+
+    // Send Message to Server
+    sendMessage(text) {
+        if (text && socket && (socket.readyState === WebSocket.OPEN )) {
+            this.socket.send(text);
+        }
+    }
+
+
+    sendObject(obj) {
+        let text = JSON.stringify(obj)
+        this.sendMessage(text)
+    }
+
+}
+
+g_ws_controller = new WsSocketController(ws_url)
+
 
 </script>
 <script>

@@ -245,13 +245,21 @@ app.post('json/email', async (req, res) => {
 
 
 
-function handler_ws_messages(message_body) {
-    console.dir(message_body)
+
+async function handler_ws_messages(ws,message_body) {
+    if ( g_repo_bridge_ops && g_ws_socks ) {
+        if ( message_body.op ) {
+            let update_message = await g_repo_bridge_ops.ws_handle_user_update_req(message_body)
+            g_ws_socks.send_ws_extract_id(ws,update_message)
+        } else {
+            console.dir(message_body)
+        }
+    }
 }
 
 
 function ws_proc_status() {
-    if ( g_proc_managers && g_ws_socks ) {
+    if ( g_repo_bridge_ops && g_ws_socks ) {
         let sendable = g_repo_bridge_ops.sendable_proc_data()
         let op_message = {
             "op" : "proc-status",
@@ -262,8 +270,20 @@ function ws_proc_status() {
 }
 
 
+
+async function ws_data_updates() {
+    if ( g_repo_bridge_ops && g_ws_socks ) {
+        let op_message = await g_repo_bridge_ops.ws_data_updates()
+        if ( op_message ) {
+            let sent = g_ws_socks.send_to_going_sessions(op_message)
+            g_repo_bridge_ops.update_messages_sent(sent)
+        }
+    }
+}
+
+
 function ws_console_log(data) {
-    if ( g_proc_managers && g_ws_socks ) {
+    if ( g_repo_bridge_ops && g_ws_socks ) {
         let op_message = {
             "op" : "console-output",
             "data" : data
@@ -278,15 +298,19 @@ if ( g_config.wss_app_port ) {   // WEB APP SCOCKETS OPTION (START)
 // ------------- ------------- ------------- ------------- ------------- ------------- ------------- -------------
 
     g_ws_socks = new WebSocketActions()
-    
+
+
     let app_server = http.createServer(app);
-    app_server.listen(g_config.wss_app_port);
-    //
-    var g_app_wss = new WebSocketServer({server: app_server});
+    const g_app_wss = new WebSocketServer({server: app_server});
     g_ws_socks.set_socket_server(g_app_wss,handler_ws_messages)
+    //
+    
+    app_server.listen(g_config.wss_app_port);
     //
 
     setInterval(() => { ws_proc_status() },5000)
+
+    setInterval(() => { ws_data_updates() },5000)
 
     setup_console(ws_console_log)
 
