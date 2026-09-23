@@ -250,7 +250,9 @@ async function handler_ws_messages(ws,message_body) {
     if ( g_repo_bridge_ops && g_ws_socks ) {
         if ( message_body.op ) {
             let update_message = await g_repo_bridge_ops.ws_handle_user_update_req(message_body)
-            g_ws_socks.send_ws_extract_id(ws,update_message)
+            if ( update_message ) {
+                g_ws_socks.send_ws_extract_id(ws,update_message)
+            }
         } else {
             console.dir(message_body)
         }
@@ -261,11 +263,13 @@ async function handler_ws_messages(ws,message_body) {
 function ws_proc_status() {
     if ( g_repo_bridge_ops && g_ws_socks ) {
         let sendable = g_repo_bridge_ops.sendable_proc_data()
-        let op_message = {
-            "op" : "proc-status",
-            "data" : sendable
+        if ( sendable ) {
+            let op_message = {
+                "op" : "proc-status",
+                "data" : sendable
+            }
+            g_ws_socks.send_to_going_sessions(op_message)
         }
-        g_ws_socks.send_to_going_sessions(op_message)
     }
 }
 
