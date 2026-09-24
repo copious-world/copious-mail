@@ -1,0 +1,14 @@
+{
+    "testing" : {
+        "concerns" : [ "popsong", "copious", "villa-family", "brobots" ],
+        "mail_cache" : {}
+    },
+    "happy-camper" : {
+        "concerns" : [ "popsong", "brobots" ],
+        "mail_cache" : {}
+    },
+    "relative" :  {
+        "concerns" : [  "villa-family", "brobots" ],
+        "mail_cache" : {}
+    }
+}

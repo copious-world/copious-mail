@@ -831,7 +831,7 @@
     </summary>
     <!-- MAIL MENU CONTROL -->
     <div class="mail-go-container" >
-        <blockquote onclick="close_if_open()">
+        <blockquote id="expanded-menu" onclick="close_if_open()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" >
                 <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
             </svg>
@@ -1450,12 +1450,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         //
         if ( mail_store ) {
             let new_mail_bunch = await load_a_bunch_of_emails(mtype)
-            if ( new_mail_bunch.length ) {
+            if ( new_mail_bunch && new_mail_bunch.length ) {
                 for ( let m of new_mail_bunch ) {
                     mail_store.unshift(m)
                 }
             } else {
-                mail_store.set(new_mail_bunch)
+                if ( new_mail_bunch ) {
+                    mail_store.set(new_mail_bunch)
+                }
             }
         }
 
@@ -1468,12 +1470,14 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
         let contact_store = store_of_mail_manager('contacts')
         if ( contact_store ) {
             let new_contact_bunch = await load_a_bunch_of_contacts()
-            if ( new_contact_bunch.length ) {
+            if ( new_contact_bunch && new_contact_bunch.length ) {
                 for ( let c of new_contact_bunch ) {
                     contact_store.unshift(c)
                 }
             } else {
-                contact_store.set(new_contact_bunch)
+                if ( new_contact_bunch ) {
+                    contact_store.set(new_contact_bunch)
+                }
             }
         }
         sort_mail('contacts')
@@ -1719,7 +1723,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 </script>
 <script>
-    let squash_container = document.getElementById("squash_container")
+    const squash_container = document.getElementById("squash_container")
+    const expanded = document.getElementById("expanded-menu")
     window.addEventListener("click",(event) => {
         close_if_open()
     })
@@ -1727,6 +1732,16 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
     function close_if_open() {
         if ( squash_container.hasAttribute("open" ) ) {
             squash_container.removeAttribute("open")
+
+            // 1. Kill the transition and snap back to the start
+            expanded.style.transition = 'none';
+
+            // 2. Force reflow
+            void expanded.offsetWidth;
+
+            // 3. Turn the transition back on and start the move
+            expanded.style.transition = 'width 0.3s ease-out, content-visibility 0.3s allow-discrete';
+
         }
     }
 
@@ -3310,6 +3325,8 @@ Retrieved 2026-09-09, License - CC BY-SA 4.0
 
 //let all_windows = {}
 
+const g_fader_interval = 50
+
 // ---->>>
 
 // === ---------------------------------------  === ---------------------------------------  === --------------------------------------- 
@@ -4074,8 +4091,10 @@ post_submit
     class MailJsonRpc {
         constructor(mtype,method,params) {
             this.id = 10 // get a good method for this id
+            let user = window._current_user_account.name
             this.params = {
                 "mail_type" : mtype,
+                "user" : user,
                 "params" : params,
                 "date" : Date.now()
             }
@@ -4108,6 +4127,7 @@ post_submit
         let rpc_result = await postData(url, data)
         if ( rpc_result && (rpc_result.error === undefined) ) {
             console.log(rpc_result)
+            if ( rpc_result.result === undefined ) return []
             return rpc_result.result
         }
         return []
@@ -4121,6 +4141,7 @@ post_submit
         let rpc_result = await postData(url, data)
         if ( rpc_result && (rpc_result.error === undefined) ) {
             console.log(rpc_result)
+            if ( rpc_result.result === undefined ) return []
             return rpc_result.result
         }
         return []
@@ -4259,6 +4280,7 @@ class WsSocketController {
                     "message" : {
                         "op" : "initial-messages",
                         "server_id" : sid,
+                        "concern" : "copious",
                         "data" : {
                             "user_name" : window._current_user_account.name
                         }
@@ -4275,16 +4297,25 @@ class WsSocketController {
         this.socket.onmessage = (event) => {
             let msg = JSON.parse(event.data)
             let data = msg.data
-console.log(data)
             // 
             if ( data.op ) {
                 switch ( data.op ) {
                     case "initial-messages":
                     case "all-updates" : {
                         let message_map = data.data
-                        if ( typeof message_map === "object" ) {
-                            for ( let [ky,mlist] of Object.entries(message_map) ) {
-                                window.add_emails_to_list(ky,mlist)
+                        if ( window.add_emails_to_list === undefined ) {
+                            setTimeout(() => {
+                                if ( typeof message_map === "object" ) {
+                                    for ( let [ky,mlist] of Object.entries(message_map) ) {
+                                        window.add_emails_to_list(ky,mlist)
+                                    }
+                                }                                
+                            },100)
+                        } else {
+                            if ( typeof message_map === "object" ) {
+                                for ( let [ky,mlist] of Object.entries(message_map) ) {
+                                    window.add_emails_to_list(ky,mlist)
+                                }
                             }
                         }
                         break

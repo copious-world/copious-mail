@@ -73,6 +73,7 @@ function setup_console(fn) {
 
 let g_ws_socks = false
 let g_config = false
+let g_user_list = false
 //
 // let g_descriptions = false
 
@@ -84,9 +85,19 @@ try {
     let conf_str = fs.readFileSync("mail_bridge.conf").toString()
     g_config = JSON.parse(conf_str) 
 } catch (e) {
-    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED CONFIGURATION FILE, manager.conf  IN YOUR WORKING DIRECTORY")
+    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED CONFIGURATION FILE, mail_bridge.conf  IN YOUR WORKING DIRECTORY")
     process.exit(0)
 }
+
+// LOAD CONFIGURATION  ... if this crashes, that's fine
+try {
+    let user_list_str = fs.readFileSync("data/user_list.db").toString()
+    g_user_list = JSON.parse(user_list_str) 
+} catch (e) {
+    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED USER DB FILE, data/user_list.db  IN YOUR DATA DIRECTORY")
+    process.exit(0)
+}
+
 
 
 /**
@@ -119,7 +130,7 @@ let g_system_coms = false
 let g_all_procs = false
 
 
-let g_repo_bridge_ops = new RepoBridgeOps(g_config.repo_bridge,g_all_procs,g_system_coms)
+let g_repo_bridge_ops = new RepoBridgeOps(g_config.repo_bridge,g_user_list,g_system_coms)
 
 
 //g_repo_ops.test()
